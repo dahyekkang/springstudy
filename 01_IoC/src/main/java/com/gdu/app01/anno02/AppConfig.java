@@ -8,7 +8,7 @@ public class AppConfig {
   
   // @Bean에 name 속성으로 bean의 이름을 등록할 수 있다.
 
-  @Bean(name = "user")  // 이렇게 하면 메소드명(aabbcc)이 더 이상 bean의 이름이 아니다.
+  @Bean(name="user")  // 이렇게 하면 메소드명(aabbcc)이 더 이상 bean의 이름이 아니다.
   public User aabbcc() {  // name="user"로 인해서 메소드이름은 의미가 없어진다.
     User user = new User();
     user.setUserNo(1);

@@ -107,7 +107,7 @@ public class MyController04 {
    * 2. @SessionAttribute
    */
   @GetMapping("/article/confirm.do")
-  public String comfirm2(@SessionAttribute("title") String title) {   // session에 저장된 "title" 속성을 String title에 저장한다.
+  public String confirm2(@SessionAttribute("title") String title) {   // session에 저장된 "title" 속성을 String title에 저장한다.
     System.out.println(title);
     return "index";
   }

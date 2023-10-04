@@ -30,7 +30,7 @@ public class MyController03 {
     return "blog/detail"; //  /WEB-INF/views/blog/detail.jsp로 forward한다. (스프링에서 forwarding한다는 말이 없으면 forward 한 것이다.(forward가 기본 방식) redirect 하고싶을 때만 적어주는 코드가 따로 존재한다.)
     // forward는 request를 전달한다. 따라서 request에 정보 저장 후 전달을 해야한다.
     // forward할 때 정보를 저장하는 방법은 request에 setAttribute 하는 것
-    // 그런데 request가 아닌 model에 저장할 것임! (request.setAttribute 대신 model.addAttribute
+    // 그런데 request가 아닌 model에 저장할 것임! (request.setAttribute 대신 model.addAttribute)
   }
   
   
@@ -63,10 +63,10 @@ public class MyController03 {
   
   /*
    * 3. 커맨드 객체를 이용한 요청 파라미터 처리
-   *  1) 요청 파라미터를 필드로 가지고 있는 객체를 커맨드 객체라고 한다.
+   *  1) 요청 파라미터를 필드로 가지고 있는 객체를 커맨드 객체라고 한다.(BlogDto)
    *  2) 요청 파라미터를 필드에 저장할 때 Setter가 사용된다.
    *  3) 요청 파라미터가 많은 경우에 유용하다.
-   *  4) 커맨드 객체는 자동으로 Model에 저장된다. 저장될 때 객체명(dto)이 아닌 클래스명(BlogDto)으로 저장된다.(클래스명을 LowerCamelCase로 바꿔서 저장한다.)
+   *  4) 커맨드 객체는 자동으로 Model에 저장된다. 저장될 때 객체명(dto)이 아닌 클래스명(BlogDto)으로 저장된다.(클래스명을 LowerCamelCase로 바꿔서 저장한다.(blogDto))
    */
   
   // @RequestMapping("/blog/detail.do")
