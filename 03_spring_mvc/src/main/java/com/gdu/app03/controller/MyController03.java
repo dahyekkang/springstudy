@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.gdu.app03.dto.BlogDto;
 
+
+// 모든 메소드의 RequestMapping에 중복되는 부분이 있다면 클래스 레벨로 RequestMapping을 뺄 수 있다!
+@RequestMapping("/blog")  // "/blog"로 시작하는 요청을 처리하는 컨트롤러가 된다.
+                          // 모든 메소드의 요청에 "/blog"가 자동으로 삽입된다.
 @Controller
 public class MyController03 {
   
@@ -21,7 +25,7 @@ public class MyController03 {
   
   
 
-  // @RequestMapping("/blog/detail.do")  // GET 방식의 method는 생략할 수 있다.(디폴트) value만 작성할 땐 value= 부분도 생략할 수 있다.
+  // @RequestMapping("/detail.do")  // GET 방식의 method는 생략할 수 있다.(디폴트) value만 작성할 땐 value= 부분도 생략할 수 있다.
   public String blogDetail(HttpServletRequest request, Model model) {    // 이 방법(HttpServletRequest)을 사용하면 parameter뿐만 아니라 session, contextPath 등 많은 것을 얻어낼 수 있다. // forwarding할 정보를 model에 저장한다.
     // ViewResolver의 prefix : /WEB-INF/views/
     // ViewResolver의 suffix : .jsp
@@ -46,7 +50,7 @@ public class MyController03 {
   
   /*
    * // @RequestParam 생략
-    @RequestMapping("/blog/detail.do")
+    @RequestMapping("/detail.do")
     public String blogDetail2(int blogNo, Model model) {   // 요청에서 blogNo 파라미터를 가져와서 int형으로 변환(Integer.parseInt)
     model.addAttribute("blogNo", blogNo); // "blogNo"라는 이름으로 blogNo값을 저장
     return "blog/detail";   // 다음 경로로 가시오.
@@ -54,7 +58,7 @@ public class MyController03 {
   
   */
   
-  // @RequestMapping("/blog/detail.do")
+  // @RequestMapping("/detail.do")
   public String blogDetail2(@RequestParam(value="blogNo", required=false, defaultValue="1") int blogNo, Model model) {   // 요청에서 blogNo 파라미터를 가져와서 int형으로 변환(Integer.parseInt)
     model.addAttribute("blogNo", blogNo); // "blogNo"라는 이름으로 blogNo값을 저장
     return "blog/detail";   // 다음 경로로 가시오.
@@ -69,14 +73,14 @@ public class MyController03 {
    *  4) 커맨드 객체는 자동으로 Model에 저장된다. 저장될 때 객체명(dto)이 아닌 클래스명(BlogDto)으로 저장된다.(클래스명을 LowerCamelCase로 바꿔서 저장한다.(blogDto))
    */
   
-  // @RequestMapping("/blog/detail.do")
+  // @RequestMapping("/detail.do")
   public String blogDetail3(BlogDto dto) {   // Model에 저장된 이름은 dto가 아니라 blogDto 이다.  // BlogDto를 첫 글자 소문자로 바꿔서 blogDto로 저장한다.
     return "blog/detail";
   }
   
   // @ModelAttribute를 이용해서 Model에 저장되는 커맨드 객체의 이름을 지정할 수 있다.
   
-  @RequestMapping("/blog/detail.do")
+  @RequestMapping("/detail.do")
   public String blogDetail4(@ModelAttribute("dto") BlogDto blogDto) {   // Model에 저장되는 이름은 dto이다. 이름을 바꾸고 싶을 때, ModelAttribute를 사용하면 된다.
     return "blog/detail";
   }

@@ -9,53 +9,131 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.gdu.app05.service.BoardService;
 import com.gdu.app05.service.BoardServiceImpl;
 
-@Controller
+  
+  /* 
+     DI
+
+    1. Dependency Injection
+    
+    
+    2. Spring Container에 저장된 객체를 가져오는 방식이다.
+    
+    
+    3. 주요 Annotation
+    
+      1) @Inject
+        (1) javax.inject.Inject
+        (2) 타입(class)이 일치하는 객체를 찾아서 가져온다.
+        (3) 동일한 타입(class)의 객체가 2개 이상 있다면 이름(id)이 일치하는 객체를 가져온다.
+        (4) 타입(class)과 이름(id)이 일치하는 Bean이 없는 경우 오류가 발생한다.
+        (5) 가져올 객체의 이름(id)을 지정하기 위해서 @Named(javax.inject.Named)를 사용할 수 있다.
+        (6) 필요한 디펜던시
+          <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+          </dependency>
+          
+      2) @Resource
+        (1) javax.annotation.Resource
+        (2) 이름(id)이 일치하는 객체를 찾아서 가져온다.
+        (3) 동일한 이름(id)을 가진 객체가 없으면 오류가 발생한다.
+        (4) 필요한 디펜던시(Javax Annotation API)
+          <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
+          </dependency>
+       
+      3) @Autowired
+        (1) org.springframework.beans.factory.annotation.Autowired
+        (2) @Inject 기반의 Spring Annotation이다. (타입 기반)
+          - 타입(class)이 일치하는 객체를 찾아서 가져온다.
+          - 동일한 타입(class)의 객체가 2개 이상 있다면 이름(id)이 일치하는 객체를 가져온다.
+          - 타입(class)과 이름(id)이 일치하는 Bean이 없는 경우 오류가 발생한다.
+        (3) 가져올 객체의 이름(id)을 지정하기 위해서 @Qualifier(org.springframework.beans.factory.annotation.Qualifier)를 사용할 수 있다.
+    
+    
+    4. DI 처리 방법
+    
+      1) 객체를 Spring Container에 넣는다. (아래 3가지 방법 중 하나 이용)
+        (1) <bean> 태그
+        (2) @Configuration + @Bean
+        (3) @Component
+          - 클래스 레벨의 Annotation
+          - @Component가 추가된 클래스는 자동으로 Spring Container에 객체로 저장된다.
+          - Controller의 @Controller와 Service의 @Service와 DAO의 @Repository는 모두 @Component를 가지고 있다.
+    
+      2) @Autowired를 이용해서 Spring Container에서 원하는 타입의 객체를 가져온다. (아래 3가지 방법 중 하나 이용)
+        (1) 필드에 주입하기
+        (2) 생성자에 주입하기
+        (3) Setter 형식의 메소드에 주입하기
+    
+    
+    5. @Autowired 사용 예시
+       
+      ┌-- Spring Container --┐
+      │  BoardDto boardDto1  │
+      │  BoardDto boardDto2  │
+      └----------------------┘
+        
+      1) 필드에 주입하기
+      
+        @Autowired
+        private BoardDto boardDto1;  // Spring Container에 BoardDto 타입의 객체가 2개가 있으므로 이름이 일치하는 boardDto1 객체를 가져온다.
+        @Autowired
+        private BoardDto boardDto2;  // Spring Container에 BoardDto 타입의 객체가 2개가 있으므로 이름이 일치하는 boardDto2 객체를 가져온다.
+        
+        @Autowired
+        @Qualifier(value="boardDto1")  // 가져올 객체 이름을 boardDto1으로 지정한다.
+        private BoardDto b1;
+        
+        @Autowired
+        @Qualifier(value="boardDto2")  // 가져올 객체 이름을 boardDto1으로 지정한다.
+        private BoardDto b2;
+      
+      2) 생성자에 주입하기
+      
+        private BoardDto boardDto1;
+        private BoardDto boardDto2;
+        
+        @Autowired  // 스프링 4 이후 생략 가능
+        public BoardController(BoardDto boardDto1, BoardDto boardDto2) {  // Spring Container에 저장된 객체를 매개변수로 가져온다.
+          this.boardDto1 = boardDto1;
+          this.boardDto2 = boardDto2;
+        }
+        
+      3) Setter 형식의 메소드에 주입하기
+      
+        private BoardDto boardDto1;
+        private BoardDto boardDto2;
+        
+        @Autowired
+        public void setBean(BoardDto boardDto1, BoardDto boardDto2) {  // Spring Container에 저장된 객체를 매개변수로 가져온다.
+          this.boardDto1 = boardDto1;
+          this.boardDto2 = boardDto2;
+        }
+   */
+  
+  
+@Controller     // 컨트롤러 전용 @Component       // @Controller도 Spring Container에 저장된다. (@Component를 포함한다.)
 public class BoardController {
   
-  /*
-   * DI
-   * 1. Dependency Injection
-   * 2. Spring Container에 저장된 객체를 가져오는 방식이다.
-   * 3. 주요 Annotation
-   *  1) @Inject
-   *    (1) javax.inject.Inject
-   *    (2) 타입이 일치하는 객체를 찾아서 가져온다. 없으면 오류가 발생한다.
-   *    (3) 동일한 타입의 객체가 2개 이상 있다면 이름이 일치하는 객체를 가져온다.
-   *  2) @Resource
-   *    (1) javax.annotation.Resource
-   *    (2) javax-annotation-api dependency를 pom.xml에 추가해야 사용할 수 있다.(자르가 필요하다! 근데 pom.xml에 이미 있다.)
-   *    <!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
-   *    <dependency>
-   *        <groupId>javax.annotation</groupId>
-   *        <artifactId>javax.annotation-api</artifactId>
-   *        <version>1.3.2</version>
-   *    </dependency>
-   *    (3) 이름이 일치하는 객체를 찾아서 가져온다. 없으면 오류가 발생한다.
-   *  3) @Autowired
-   *    (1) org.springframework.beans.factory.annotation.Autowired
-   *    (2) @Inject 기반의 Spring Annotation이다. (타입 기반)
-   *    (3) 객체 이름을 기준으로 가져올 수 있도록 @Qualifier(org.springframework.beans.factory.annotation.Qualifier)를 사용할 수 있다.
-   */
-  
-  /*
-   * BoardService DI 처리 방법
-   * 1. BoardService 타입의 BoardServiceImpl 객체를 Spring Container에 넣는다. (아래 3가지 방법 중 하나 이용)
-   *  1) <bean> 태그            : /WEB-INF/spring/root-context.xml
-   *  2) @Configuration + @Bean : com.gdu.app05.config.AppConfig.java
-   *  3) @Component            
-   *  
-   * 2. @Autowired 를 이용해서 Spring Container에서 BoardService 타입의 객체를 가져온다. (아래 3가지 방법 중 하나 이용)
-   *  1) 필드에 주입하기
-   *  2) 생성자에 주입하기
-   *  3) Setter 형식의 메소드에 주입하기
-   */
-  
-  
-  
 
+  // @Autowired
+  // 주입된 boardService 객체의 변경 방지를 위해 final 처리한다.
+  private final BoardService boardService;
+  
+  // boardService에 final 처리를 하면 생성자 주입만 가능하다.(필드 주입과 Setter 주입은 불가능하다.)
+  // 생성자 주입의 @Autowired는 생략할 수 있으므로 @RequiredArgsConstructor와 같은 Annotation으로 대체할 수 있다.
   @Autowired
-  private BoardService boardService;
-
+  public BoardController(BoardService boardService) {
+    super();
+    this.boardService = boardService;
+  }
+  
+  
+  // Dao는 Service에서 @Autowired 호출. Service는 Controller에서 @Autowired 호출.
 
   @RequestMapping(value="/board/list.do", method=RequestMethod.GET)
   public String list(Model model) {
