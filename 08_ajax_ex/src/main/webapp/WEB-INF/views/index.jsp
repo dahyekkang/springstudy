@@ -13,10 +13,7 @@
 <body>
 
   <div>
-    <h3><a href="${contextPath}/ajax1.do">연습하러가기-1</a></h3>
-    <h3><a href="${contextPath}/ajax2.do">연습하러가기-2</a></h3>
-    <h3><a href="${contextPath}/ajax3.do">연습하러가기-3</a></h3>
-    <h3><a href="${contextPath}/ajax4.do">연습하러가기-4</a></h3>
+    
   </div>
 
 </body>
