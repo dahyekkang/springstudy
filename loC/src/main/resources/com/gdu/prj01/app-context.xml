@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <!-- UserDto에 대한 bean만들기 --> 
+  <bean class="com.gdu.prj01.dto.UserDto" id="user1">
+    <property name="userNo" value="1" />
+    <property name="userId" value="admin" />
+  </bean>
+  
+  <!-- BoardDto에 대한 bean만들기 --> 
+  <bean class="com.gdu.prj01.dto.BoardDto" id="board1">
+    <property name="boardNo" value="1" />
+    <property name="title" value="공지사항" />
+    <property name="userDto" ref="user1" />
+  </bean>
+  
+  <bean class="com.gdu.prj01.dto.UserDto" id="user2">
+    <constructor-arg value="2" />
+    <constructor-arg value="master" />
+  </bean>
+
+  <bean class="com.gdu.prj01.dto.BoardDto" id="board2">
+    <constructor-arg value="2" /> 
+    <constructor-arg value="협조사항" /> 
+    <constructor-arg ref="user2" /> 
+  </bean>
+
+</beans>
