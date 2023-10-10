@@ -11,7 +11,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.gdu.prj02.dto.BoardDto;
 import com.gdu.prj02.service.BoardService;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor  // private final BoardService boardService에 Bean이 반드시 전달됨을 보증하는 Annotation
