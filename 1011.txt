@@ -1,0 +1,83 @@
+기본 명령어 형식
+  명령어  -옵션 or --옵션  인자
+
+ls
+ls -al
+
+mkdir
+cd
+rmdir : 비어 있는 디렉터리만 지움
+rm -r : 비어 있지 않은 디렉터리도 지움
+
+rm -i : 삭제 확인 메시지 노출
+alias rm='rm -i'
+rm -f : 강제 삭제
+
+echo date : 문자열 date 출력
+echo `date` : date 명령의 결과 출력
+echo $HOME : HOME 변수값 출력
+
+cp a b : a를 b로 복사
+cp a /b : a를 루트(/) 아래 b로 복사(권한 문제 있음)
+sudo cp a /b : 관리자 권한으로 다시 복사(성공)
+
+vi a : 파일 a 만들며 vi 편집기 열기
+a /  i  / o : 입력 모드 진입
+esc : 입력 모드 종료
+:wq : 저장 후 vi 편집기 종료
+:q!  : 저장 없이 vi 편집기 종료
+
+------------------- 오라클 11g XE 설치 
+
+1. 윈도우에서 Powershell 열기
+  cd  C:\Users\GOODEE\Downloads : 다운로드 받은 곳으로 이동
+  scp  oracle-xe-11.2.0-1.0.x86_64.rpm.zip  goodee@192.168.56.1:/home/goodee
+--지금부터 서버에서 작업--
+2. /tmp로 설치파일 이동
+  mv oracle-xe-11.2.0-1.0.x86_64.rpm.zip /tmp
+3. 설치 패키지 업데이트
+  sudo apt-get update
+  - 설치 패키지 이해하기
+    - Debian 계열 : Ubuntu - deb
+    - Redhat 계열 : Centos  - rpm
+4. unzip 설치
+  sudo apt-get  install  unzip
+5. alien 설치 (rpm -> deb 변환용)
+  sudo apt-get install  -y  alien
+6. /tmp로 이동 후 압축 풀기
+  cd  /tmp
+  unzip  oracle-xe-11.2.0-1.0.x86_64.rpm.zip
+7. 압축 해제된 디렉터리 Disk1으로 이동
+  cd Disk1
+8. rpm -> deb 변환
+  sudo alien --script -d oracle-xe-11.2.0-1.0.x86_64.rpm
+9. 변환된 deb 이름 확인
+  ls
+    oracle-xe-11.2.0-1.0.x86_64.rpm
+    oracle-xe_11.2.0-2_amd64.deb  (이걸로 설치해야 한다.)
+    response
+    upgrade
+10. 설치시작
+  sudo dpkg  --install  oracle-xe_11.2.0-2_amd64.deb
+11. 오라클 초기 설정
+  sudo /etc/init.d/oracle-xe configure
+  - HTTP Port : 8088 (8080 아님)
+  - Listener    : 1521
+  - Password  : 1111
+12. 환경 변수 설정
+  vi ~/.bashrc 실행 뒤 입력 모드 진입(a / i / o)
+  아래 내용 입력
+export ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe
+export ORACLE_SID=XE
+export NLS_LANG=`$ORACLE_HOME/bin/nls_lang.sh`
+export ORACLE_BASE=/u01/app/oracle
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib:$LD_LIBRARY_PATH
+export PATH=$ORACLE_HOME/bin:$PATH
+  입력 후 :wq
+13. 변경사항 적용
+  source ~/.bashrc
+14. 실행 확인
+  sqlplus  -  SYSTEM/1111
+15. SQLDeveloper 접속 확인
+  Name : server1
+  호스트 : 192.168.56.1
