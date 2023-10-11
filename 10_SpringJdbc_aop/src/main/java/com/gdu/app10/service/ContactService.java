@@ -10,4 +10,5 @@ public interface ContactService {
   public int deleteContact(int contact_no);
   public List<ContactDto> getContactList();
   public ContactDto getContactByNo(int contact_no);
+  public void txTest();
 }
