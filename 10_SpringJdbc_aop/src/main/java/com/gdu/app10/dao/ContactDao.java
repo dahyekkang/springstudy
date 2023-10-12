@@ -36,7 +36,7 @@ public class ContactDao {
    * 2. 미리 하나의 객체를 만든 뒤 해당 객체를 가져다 사용할 수 있도록 처리한다.
    * 3. 객체 생성이 불가능하도록 생성자를 호출할 수 없게 만든다.
    */
-  @Autowired  // Spring Container에 저장된 JdbcConnection 타입의 객체(Bean)를 가져온다.
+
   private final JdbcTemplate jdbcTemplate;
 
 

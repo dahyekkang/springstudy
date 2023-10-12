@@ -26,7 +26,7 @@ public class BeforeAop {
   
   // 어드바이스 : 무슨 동작을 하는가?
   @Before("setPointCut()")  // ContactController의 모든 메소드가 동작하기 전에 동작한다.
-  public void beforeAdvice(JoinPoint joinPoint) {
+  public void beforeAdvice(JoinPoint joinPoint) {   // JoinPoint : 어드바이스로 전달되는 메소드
     /*
      * Before 어드바이스
      * 1. 반환타입 : void
@@ -46,7 +46,7 @@ public class BeforeAop {
     // 3. 요청 파라미터 출력 형태 만들기
     String params = "";
     if(map.isEmpty()) {
-      params += "[No Parameter]";
+      params += "No Parameter";
     } else {
       for(Map.Entry<String, String[]> entry : map.entrySet()) {
         params += entry.getKey() + ":" + Arrays.toString(entry.getValue()) + " ";

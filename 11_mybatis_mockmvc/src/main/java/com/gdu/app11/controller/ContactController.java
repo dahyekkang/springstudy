@@ -43,9 +43,9 @@ public class ContactController {
   }
   
   @RequestMapping(value="/contact/detail.do", method=RequestMethod.GET)
-  public String detail(@RequestParam(value="contact_no", required=false, defaultValue="0") int contact_no, Model model) {
+  public String detail(@RequestParam(value="contactNo", required=false, defaultValue="0") int contactNo, Model model) {
     // SELECT의 결과는 forward 대상이다.(model사용)
-    model.addAttribute("contact", contactService.getContactByNo(contact_no));
+    model.addAttribute("contact", contactService.getContactByNo(contactNo));
     return "contact/detail";
   }
   
@@ -53,12 +53,12 @@ public class ContactController {
   public String modify(ContactDto contactDto, RedirectAttributes redirectAttributes) {
     int modifyResult = contactService.modifyContact(contactDto);
     redirectAttributes.addFlashAttribute("modifyResult", modifyResult);
-    return "redirect:/contact/detail.do?contact_no=" + contactDto.getContact_no();
+    return "redirect:/contact/detail.do?contactNo=" + contactDto.getContactNo();
   }
   
   @RequestMapping(value="/contact/delete.do", method=RequestMethod.POST)    // delete할 때, POST 권장
-  public String delete(@RequestParam(value="contact_no", required=false, defaultValue="0") int contact_no, RedirectAttributes redirectAttributes) {
-    int deleteResult = contactService.deleteContact(contact_no);
+  public String delete(@RequestParam(value="contactNo", required=false, defaultValue="0") int contactNo, RedirectAttributes redirectAttributes) {
+    int deleteResult = contactService.deleteContact(contactNo);
     redirectAttributes.addFlashAttribute("deleteResult", deleteResult);
     return "redirect:/contact/list.do";
   }

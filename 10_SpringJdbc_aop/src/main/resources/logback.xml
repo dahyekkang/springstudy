@@ -11,7 +11,7 @@
   </appender>
   
   <!-- Application Loggers -->
-  <logger name="com.gdu.app09" level="info" />
+  <logger name="com.gdu.app10" level="info" />
   
   <!-- 3rdparty Loggers -->
   <logger name="org.springframework" level="info" />

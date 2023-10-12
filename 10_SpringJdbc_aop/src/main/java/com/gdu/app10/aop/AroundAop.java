@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class AroundAop {
 
+  // Around로 쓸 때에는 이전과 이후에 모두 호출해야 하는 경우에만 사용해라.
+  
   // 포인트컷 : 언제 동작하는가?
   @Pointcut("execution(* com.gdu.app10.controller.*Controller.*(..))")
   public void setPointCut() { }
