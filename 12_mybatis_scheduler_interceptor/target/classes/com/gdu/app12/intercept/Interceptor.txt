@@ -1,0 +1,25 @@
+Interceptor
+
+1. 컨트롤러로 들어오는 요청과 응답을 가로챈다.
+
+2. HandlerInterceptor 인터페이스를 구현(권장)하거나, HandlerInterceptorAdapter 클래스를 상속하면 인터셉터가 된다.
+
+3. Spring Container에 Bean으로 등록해 두어야 한다.
+
+4. 주요 메소드
+  1) preHandle()       : 요청 전에 동작할 코드 작성(false를 리턴하면 컨트롤러 요청 동작을 막을 수 있다.)
+  2) postHandle()      : 요청 후에 동작할 코드 작성(컨트롤러의 Handler 동작 이후)
+  3) afterCompletion() : View까지 처리가 끝난 후 동작할 코드 작성
+
+5. 언제 Interceptor가 동작할 것인지 servlet-context.xml에 작성한다.
+  1) <mapping>         : 인터셉터가 동작할 요청 주소
+  2) <exclude-mapping> : 인터셉터가 동작하지 않을 요청 주소
+  3) <beans:bean>      : 동작할 인터셉터
+
+6. Filter vs Interceptor
+
+      | Filter                    | Interceptor
+------|---------------------------|--------------------------
+호출  | DispatcherServlet 실행 전 | DispatcherServlet 실행 후
+설정  | web.xml                   | servlet-context.xml
+요청  | 처리함                    | 처리함/처리안함
