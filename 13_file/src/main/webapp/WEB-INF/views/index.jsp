@@ -9,11 +9,13 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="${contextPath}/resources/ckeditor/ckeditor.js"></script>
 <script>
 
   $(function(){
   	fnFileCheck();
   	fnUpload();
+  	fnCkeditor();
   })
   
   function fnFileCheck(){
@@ -70,10 +72,32 @@
             alert('실패');
           }
         }
-        
       })
     })
   }
+  
+  function fnCkeditor(){
+	  
+	  CKEDITOR.replace('contents', {   // <textarea id="contents"></textarea>    // contents는 id이지만 #을 붙이지 않는다. (CKEDITOR의 사용법임.)
+		  
+		  width: '1000px',               // 프로퍼티 : 값
+		  height: '400px',
+		  filebrowserImageUploadUrl: '${contextPath}/ckeditor/upload.do'               // 값 : 파일 업로드 처리할 서버 주소
+	  });
+	  
+	  CKEDITOR.on('dialogDefinition', function(event){
+		  var dialogName = event.data.name;
+		  var dialogDefinition = event.data.definition;
+		  switch(dialogName){
+		  case 'image':
+			  dialogDefinition.removeContents('Link');
+			  dialogDefinition.removeContents('advanced');
+			  break;
+		  }
+	  });
+	  
+  }
+  
 
 </script>
 
@@ -89,21 +113,32 @@
       <div>
         <button type="submit">업로드</button>
       </div>
-      <div id="file_list"></div>
     </form>
   </div>
   
-  
+  <hr>
+  <div id="file_list"></div>
   <hr>
   
   <div>
     <h3>ajax 파일첨부</h3>
     <div>
-       <input type="file" class="files" multiple>
+      <input type="file" class="files" id="files" multiple>
     </div>
     <div>
       <button type="button" id="btn_upload">업로드</button>
     </div>
+  </div>
+  
+  <hr>
+  
+  <div>
+    <h3>CKEditor</h3>
+    <form>
+      <div>
+        <textarea id="contents"></textarea>
+      </div>
+    </form>
   </div>
 
 </body>
