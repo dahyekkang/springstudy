@@ -49,8 +49,20 @@
   </update>
   
   <delete id="deleteMember" parameterType="int">
-    DELETE FROM MEMBER_T
+    DELETE
+      FROM MEMBER_T
      WHERE MEMBER_NO = #{memberNO}
+  </delete>
+  
+  <delete id="deleteMembers" parameterType="List">
+    DELETE
+      FROM MEMBER_T
+     <where>
+        MEMBER_NO
+       <foreach collection="list" item="memberNo" open="IN(" close=")" separator=",">
+           #{memberNo}
+       </foreach>
+     </where>
   </delete>
   
 </mapper>

@@ -28,8 +28,10 @@ import lombok.RequiredArgsConstructor;
  *  1) 목록  /members    GET        /members/page/1                   (/members?page=1로 생각하면 안 된다!)
  *  2) 상세  /members/1  GET        member중 1번에 있는 애를 가져와라
  *  3) 삽입  /members    POST       누군지 알아야 하니까 1이 붙는다. 1번과 3번이 같은 주소지만 Method가 다르므로 다른 것이다!
- *  4) 수정  /members    PUT        그냥 MVC할 때는 사용하지 않아도 된다. REST개발할 때만 사용
- *  5) 삭제  /members/1  DELETE     누군지 알아야 하니까 1이 붙는다.
+ *  4) 수정  /members    PUT        그냥 MVC할 때는 사용하지 않아도 된다. REST개발할 때만 사용      // POST와 유사한 방식(주소창 사용X)
+ *  5) 삭제  /member/1  DELETE      /members/4,3,2            // 누군지 알아야 하니까 1이 붙는다.   // GET과 유사한 방식(주소창 사용O)
+ *  
+ *  삭제에서 /members/4,3,2 : ,로 분리해서 삭제할 데이터를 String으로 받아서 split사용하여 배열로 만들어서 배열을 리스트로 바꿔서 mybatis에서 foreach로 순회처리.
  *  
  *  주소는 2가지밖에 안 나오지만 Method가 4개이다! (GET, POST, PUT, DELETE)
  */
@@ -67,10 +69,16 @@ public class MemberController {
     return memberService.modifyMember(memberDto);
   }
   
-  // 회원 삭제 요청
-  @RequestMapping(value="/members/{mNo}", method=RequestMethod.DELETE)
-  public int deleteMember(@PathVariable(value="mNo") int memberNo) {
-    return memberService.deleteMember(memberNo);
+  // 회원 정보 삭제 요청
+  @RequestMapping(value="/member/{memberNo}", method=RequestMethod.DELETE, produces="application/json")
+  public Map<String, Object> removeMember(@PathVariable(value="memberNo") int memberNo) {
+    return memberService.removeMember(memberNo);
+  }
+  
+  // 회원들 정보 삭제 요청
+  @RequestMapping(value="/members/{memberNoList}", method=RequestMethod.DELETE, produces="application/json")
+  public Map<String, Object> removeMembers(@PathVariable(value="memberNoList") String memberNoList){
+    return memberService.removeMembers(memberNoList);
   }
   
 }
