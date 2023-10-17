@@ -1,6 +1,5 @@
 package com.gdu.app14.controller;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -43,20 +42,35 @@ public class MemberController {
   private final MemberService memberService;
   
   // 회원 등록 요청
-  
-  // 삽입
   @RequestMapping(value="/members", method=RequestMethod.POST, produces="application/json")
-  public Map<String, Object> registerMember(@RequestBody MemberDto member, HttpServletResponse response){   // 파라미터로 데이터가 오는 게 아니라, JSON 덩어리가 POST방식으로 본문에 포함돼서 전달되는 방식이다.
-    // 서비스 호출
-    return memberService.register(member, response);
+  public Map<String, Object> registerMember(@RequestBody MemberDto memberDto, HttpServletResponse response){  // Dto랑 Map 중 Dto 선택  // 파라미터로 데이터가 오는 게 아니라, JSON 덩어리가 POST방식으로 본문에 포함돼서 전달되는 방식이다.
+    return memberService.register(memberDto, response);
   }
   
   // 회원 목록 요청
-  // 경로에 포함되어 있는 변수 {page}는 @PathVariable을 이용해서 가져올 수 있다.
+  // 경로에 포함되어 있는 변수 {p}는 @PathVariable을 이용해서 가져올 수 있다.
   @RequestMapping(value="/members/page/{p}", method=RequestMethod.GET, produces="application/json")
-  public Map<String, Object> getMembers(@PathVariable(value="p", required=false) Optional<String> opt) {
-    int page = Integer.parseInt(opt.orElse("1"));
+  public Map<String, Object> getMembers(@PathVariable(value="p", required=false) Optional<String> opt) {    // (@PathVariable int page)로 해도 된다. 만약 여러 개의 경로가 온다면 사용 불가!
+    int page = Integer.parseInt(opt.orElse("1"));     // null일 때, 1을 받는다.
     return memberService.getMembers(page);
+  }
+  
+  // 회원 조회 요청
+  @RequestMapping(value="/members/{mNo}", method=RequestMethod.GET, produces="application/json")
+  public Map<String, Object> getMember(@PathVariable(value="mNo") int memberNo) {
+    return memberService.getMember(memberNo);
+  }
+  
+  // 회원 정보 수정 요청
+  @RequestMapping(value="/members", method=RequestMethod.PUT, produces="application/json")
+  public Map<String, Object> modifyMember(@RequestBody MemberDto memberDto){  // @RequestBody : index의 응답에서 어딨는지 알려주면 꺼내서 사용
+    return memberService.modifyMember(memberDto);
+  }
+  
+  // 회원 삭제 요청
+  @RequestMapping(value="/members/{mNo}", method=RequestMethod.DELETE)
+  public int deleteMember(@PathVariable(value="mNo") int memberNo) {
+    return memberService.deleteMember(memberNo);
   }
   
 }

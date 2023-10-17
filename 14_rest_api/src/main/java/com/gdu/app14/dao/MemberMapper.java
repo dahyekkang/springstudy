@@ -19,4 +19,13 @@ public interface MemberMapper {
   // 전체 개수
   public int getMemberCount();
   
+  // 회원 조회
+  public MemberDto getMember(int memberNo);
+  
+  // 회원 정보 수정
+  public int updateMember(MemberDto memberDto);
+  
+  // 회원 정보 삭제
+  public int deleteMember(int memberNo);
+  
 }
