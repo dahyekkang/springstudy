@@ -19,7 +19,7 @@ public class MyLogbackLayout extends LayoutBase<ILoggingEvent> {
     String loggerName = event.getLoggerName();
     sb.append(loggerName);
     if(loggerName.equals("jdbc.sqlonly")) {
-      sb.append("\n");
+      sb.append("\n    ");
     } else {
       sb.append(" - ");
     }

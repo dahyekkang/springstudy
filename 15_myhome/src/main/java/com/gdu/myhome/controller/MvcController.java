@@ -1,15 +1,14 @@
 package com.gdu.myhome.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class MvcController {
-
-  @RequestMapping(value={"/", "/main.do"}, method=RequestMethod.GET)
-  public String index() {
-    return "index";
+  
+  @GetMapping(value={"/", "/main.do"})
+  public String main() {
+    return "layout/main";
   }
   
 }
