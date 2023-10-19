@@ -2,70 +2,80 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
-
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<style>
+  .ck.ck-editor {
+    max-width: 800px;
+  }
+  .ck-editor__editable {
+    min-height: 400px;
+  }
+  .ck-content {
+    font-size: 12px;
+    color: orange;
+  }
+</style>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-<script src="${contextPath}/resources/ckeditor/ckeditor.js"></script>
+<!-- resources에 추가한 거 삭제! 그걸로 안하고 아래의 CDN(script로 추가) 사용 -->
+<script src="https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js"></script>
 <script>
 
-  $(function(){
-  	fnFileCheck();
-  	fnUpload();
-  	fnCkeditor();
+  $(function(){     
+    fnFileCheck();
+    fnUpload();
+    fnCkeditor();
   })
   
   function fnFileCheck(){
-  	$('.files').change(function(){
-  		console.log(this.files);
-  		$('#file_list').empty();
-  		var maxSize = 1024 * 1024 * 100;
-  		var maxSizePerFile = 1024 * 1024 * 10;
-  		var totalSize = 0;
-  		var files = this.files;
-  		for(let i = 0; i  < files.length; i++){
-  			totalSize += files[i].size;
-  			if(files[i].size > maxSizePerFile){
-  				alert('각 첨부파일의 최대 크기는 10MB입니다.');
-  				$(this).val('');
-  				$('#file_list').empty();
-  				return;
-  			}
-  			$('#file_list').append('<div>' + files[i].name + '</div>');
-  		}
-  		if(totalSize > maxSize){
-  			alert('전체 첨부파일의 최대 크기는 100MB입니다.');
-  			$(this).val('');
-  			return;
-  		}
-  	})
+    $('.files').change(function(){
+      console.log(this.files);
+      $('#file_list').empty();
+      var maxSize = 1024 * 1024 * 100;
+      var maxSizePerFile = 1024 * 1024 * 10;
+      var totalSize = 0;
+      var files = this.files;
+      for(let i = 0; i < files.length; i++){
+        totalSize += files[i].size;
+        if(files[i].size > maxSizePerFile){
+          alert('각 첨부파일의 최대 크기는 10MB입니다.');
+          $(this).val('');
+          $('#file_list').empty();
+          return;
+        }
+        $('#file_list').append('<div>' + files[i].name + '</div>');
+      }
+      if(totalSize > maxSize){
+        alert('전체 첨부파일의 최대 크기는 100MB입니다.');
+        $(this).val('');
+        $('#file_list').empty();
+        return;
+      }
+    })
   }
   
   function fnUpload(){
     $('#btn_upload').click(function(){
       // ajax 파일 첨부는 FormData 객체를 생성해서 data로 전달한다.
-      var formData = new FormData();    // form 태그를 자바 스크립트로 만들 것이다. ajax 이벤트 처리하는 방식은 submit을 못한다!!!!!!! 일반 mvc pattern할 때만 submit을 할 수 있다.
-      var files = $('.files')[0].files; // 첨부된 파일들 배열이 된다.
-      $.each(files, function(i, elem){
-        formData.append('files', elem);       
+      var formData = new FormData();
+      var files = $('#files').prop('files');  // var files = $('#files')[0].files;  
+      $.each(files, function(i, elem){          
+        formData.append('files', elem);
       })
-      
       // ajax
       $.ajax({
-        
         // 요청
         type: 'post',
         url: '${contextPath}/ajax/upload.do',
         data: formData,
         contentType: false,
         processData: false,
-        
         // 응답
         dataType: 'json',
-        success: function(resData){    // resData === {"success":true}     // true면 성공, false면 실패
+        success: function(resData){  // resData === {"success":true}
           if(resData.success){
             alert('성공');
           } else {
@@ -75,32 +85,45 @@
       })
     })
   }
-  
+
   function fnCkeditor(){
-	  
-	  CKEDITOR.replace('contents', {   // <textarea id="contents"></textarea>    // contents는 id이지만 #을 붙이지 않는다. (CKEDITOR의 사용법임.)
-		  
-		  width: '1000px',               // 프로퍼티 : 값
-		  height: '400px',
-		  filebrowserImageUploadUrl: '${contextPath}/ckeditor/upload.do'               // 값 : 파일 업로드 처리할 서버 주소
-	  });
-	  
-	  CKEDITOR.on('dialogDefinition', function(event){
-		  var dialogName = event.data.name;
-		  var dialogDefinition = event.data.definition;
-		  switch(dialogName){
-		  case 'image':
-			  dialogDefinition.removeContents('Link');
-			  dialogDefinition.removeContents('advanced');
-			  break;
-		  }
-	  });
-	  
+   
+    ClassicEditor
+      .create(document.getElementById('contents'), {
+        toolbar: {
+          items: [
+            'undo', 'redo',
+            '|', 'heading',
+            '|', 'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+            '|', 'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+            '|', 'link', 'uploadImage', 'blockQuote', 'codeBlock',
+            '|', 'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+          ],
+          shouldNotGroupWhenFull: false
+       },
+       heading: {
+         options: [
+           { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+           { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+           { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+           { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+           { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' },
+           { model: 'heading5', view: 'h5', title: 'Heading 5', class: 'ck-heading_heading5' },
+           { model: 'heading6', view: 'h6', title: 'Heading 6', class: 'ck-heading_heading6' }
+         ]
+       },
+       ckfinder: {
+         // 업로드 경로
+         uploadUrl: '${contextPath}/ckeditor/upload.do'
+       }
+     })
+     .catch(err => {
+       console.log(err)
+     });
+    
   }
   
-
 </script>
-
 </head>
 <body>
 
@@ -134,9 +157,12 @@
   
   <div>
     <h3>CKEditor</h3>
-    <form>
+    <form method="post" action="${contextPath}/add.do">
       <div>
-        <textarea id="contents"></textarea>
+        <textarea name="contents" id="contents"></textarea>
+      </div>
+      <div>
+        <button type="submit">전송</button>
       </div>
     </form>
   </div>

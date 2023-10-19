@@ -1,0 +1,115 @@
+1. 빌드와 배포
+  1) 빌드 : build, 프로젝트를 배포하기 위해서 하나의 파일로 만드는 과정(war 또는 jar)
+  2) 배포 : deploy, WAS(Tomcat)에 빌드된 파일을 배포하는 것
+
+2. 빌드
+  1) Run As - Maven Build
+  2) 빌드 파일명 (pom.xml에서 확인)
+    (1) 기본 이름 : artifactId-version.packaging
+    (2) 사용자 지정
+      <build>
+        <finalName>${artifactId}</finalName>
+    (3) 빌드 파일 생성 경로
+      프로젝트\target
+
+3. 배포
+  1) 톰캣이 꺼져있는지(OFF) 확인한다.
+  2) CATALINA_HOME\webapps 디렉터리에 빌드된 파일(war 또는 jar)를 가져다둔다.
+  3) 톰캣을 켠다.(ON)
+    - CATALINA_HOME\bin\startup.bat : Windows 서버
+    - CATALINA_HOME\bin\startup.sh  : Linux 서버
+  4) 웹 브라우저를 열고 확인한다.
+    http://localhost:8080/빌드파일명
+
+4. Maven 설치
+  1) Maven Repository에서 maven compiler를 검색하고 어떤 버전이 있는지 확인한다.
+     (https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin)
+  2) Maven 사이트(maven.apache.org)에서 Maven을 다운로드 받는다. (확인된 버전을 다운로드 받는다.)
+    (1) Other Releases - Maven 3 Archive 링크
+    (2) 확장자 zip    : Windows 서버
+        확장자 tar.gz : Linux 서버
+  3) Maven을 설치한다.
+    (1) 경로 : C:\Program Files\apache-maven-3.8.1
+    (2) 환경변수 등록
+      - 변수명 : MAVEN_HOME
+      - 변수값 : C:\Program Files\apache-maven-3.8.1
+  4) pom.xml을 열고 작업한다.
+    (1) <build>
+          <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+    2) <properties>
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+5. github에 push
+  1) git init
+  2) git remote add origin '레파지토리주소'
+  3) git add .
+  4) git commit -m '메시지'
+  5) git push origin main
+
+6. Tomcat 사용자 설정
+  1) CATALINA_HOME\conf\tomcat-users.xml 열기
+  2) 아래 태그 추가하기
+    <role rolename="manager-gui"/>
+    <role rolename="manager-script"/>
+    <role rolename="manager-jmx"/>
+    <role rolename="manager-status"/>
+    <user username="tomcat-manager" password="1111" roles="manager-gui,manager-script,manager-jmx,manager-status"/>
+
+7. Tomcat에 DB 라이브러리 추가하기
+  1) CATALINA_HOME\lib 디렉터리 열기
+  2) ojdbc8.jar 가져다두기
+
+8. Tomcat Console 한글 깨짐
+   CATALINA_HOME\conf\logging.properties 파일 열고,
+   java.util.logging.ConsoleHandler.encoding = UTF-8을
+   java.util.logging.ConsoleHandler.encoding = EUC-KR로 수정하기
+
+9. Jenkins 실행 및 플러그인 설치
+  1) Jenkins를 다운로드 받는다.
+     https://www.jenkins.io/download/ - Generic Java Package(*.war) 다운로드
+  2) 톰캣이 꺼져있는지(OFF) 확인한다.
+  3) CATALINA_HOME\webapps 디렉터리에 jenkins.war를 가져다둔다.
+  4) 톰캣을 켠다.(ON)
+    - CATALINA_HOME\bin\startup.bat : Windows 서버
+    - CATALINA_HOME\bin\startup.sh  : Linux 서버
+  5) 웹 브라우저를 열고 확인한다.
+    http://localhost:8080/jenkins
+  6) 초기 비밀번호를 입력한다.
+    (1) Tomcat 로그에 초기 비밀번호가 찍혀있다.
+    (2) 아니면 C:\사용자\계정\.jenkins\secrets\initialAdminPassword 파일을 열어서 확인한다.
+  7) Install suggested plugins을 클릭해서 권장 플러그인을 모두 설치한다. (실패하면 다시 Retry를 누른다.)
+  8) 사용자 정보를 입력한다.
+    (1) 사용자명 : goodee
+    (2) 비밀번호 : 1111
+  9) jenkins는 localhost를 사용할 수 없으므로 jenkins url을 아래와 같이 수정한다.
+    http://127.0.0.1:8080/jenkins
+
+**********************************************
+ 젠킨스 구동 실패 시
+  1. 톰캣 끄기
+  2. C:\사용자\.jenkins 폴더 삭제
+  3. CATALINA_HOME\webapps\jenkins 폴더 삭제
+  4. CATALINA_HOME\conf\tomcat-users.xml 파일 확인
+  5. CATALINA_HOME\lib\ojdbc8.jar 파일 확인
+  6. 모든 환경변수 확인
+    JAVA_HOME
+    CATALINA_HOME
+    MAVEN_HOME
+  7. 재부팅
+  8. 톰캣 다시 켜기
+**********************************************
+
+
+
+
+
+
+
+
+
+
+
+
