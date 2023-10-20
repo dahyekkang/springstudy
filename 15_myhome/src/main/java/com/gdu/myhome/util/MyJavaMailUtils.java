@@ -20,7 +20,10 @@ public class MyJavaMailUtils {
       
       // Properties 객체 생성
       Properties properties = new Properties();
-      properties.put("", properties)
+      properties.put("", env.getProperty("spring.mail.host"));
+      properties.put("", env.getProperty("spring.mail.port"));
+      properties.put("", env.getProperty("spring.mail.properties.mail.smtp.auth"));
+      properties.put("", env.getProperty("spring.mail.properties.mail.smtp.starttls.enable"));
       
     }
     
