@@ -7,10 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.gdu.myhome.dao.UserMapper;
 import com.gdu.myhome.dto.UserDto;
+import com.gdu.myhome.util.MyJavaMailUtils;
 import com.gdu.myhome.util.MySecurityUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ public class UserServiceImpl implements UserService {
 
   private final UserMapper userMapper;
   private final MySecurityUtils mySecurityUtils;      // 암호화할 때 필요한 클래스
+  private final MyJavaMailUtils myJavaMailUtils;
   
   @Override
   public void login(HttpServletRequest request, HttpServletResponse response) {   // 직접 응답하겠다. 컨트롤러 응답 X 서비스가 직접 응답. 주로 응답이 여러가지일 때 사용!
@@ -74,5 +78,33 @@ public class UserServiceImpl implements UserService {
     }
     
   }
+  
+  @Override
+  public ResponseEntity<Map<String, Object>> checkEmail(String email) {
+    
+    Map<String, Object> map = Map.of("email", email);
+    
+    boolean enableEmail = userMapper.getUser(map) == null     // 셋 다 null이면 사용 가능한 이메일
+                       && userMapper.getLeaveUser(map) == null
+                       && userMapper.getInactiveUser(map) == null;
+    
+    return new ResponseEntity<>(Map.of("enableEmail", enableEmail), HttpStatus.OK);  // ResponseEntity<Map<String,Object>>에서 Map<>는 생략 가능
+  }
+  
+  
+  @Override
+  public ResponseEntity<Map<String, Object>> sendCode(String email) {
+    
+    // RandomString 생성(6자리 문자+숫자 조합의 문자열)
+    String code = mySecurityUtils.getRandomString(6, true, true);
+    
+    // 메일 전송
+    myJavaMailUtils.sendJavaMail(email
+                              , "myhome 인증 코드"
+                              , "<div>인증코드는 <strong>" + code + "</strong>입니다.</div>");
+    return new ResponseEntity<>(Map.of("code", code), HttpStatus.OK);
+ 
+  }
+  
   
 }

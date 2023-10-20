@@ -1,14 +1,13 @@
 /**
  * 가입 이전 단계 : 약관 동의 페이지
  */
- 
- $(() => {
+
+$(() => {
   fnChkAll();
   fnChkEach();
   fnJoinForm();
 })
- 
- 
+
 // 전체 선택을 클릭하면 개별 선택에 영향을 미친다.
 const fnChkAll = () => {
   $('#chk_all').click((ev) => {
@@ -32,7 +31,7 @@ const fnJoinForm = () => {
   $('#frm_agree').submit((ev) => {
     if(!$('#service').is(':checked')){
       alert('필수 약관에 동의하세요.');
-      ev.preventDefault;
+      ev.preventDefault();
       return;
     }
   })

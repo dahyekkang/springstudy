@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Builder
-public class UserDto {
+public class InactiveUserDto {
   private int userNo;
   private String email;
   private String pw;
@@ -25,4 +25,5 @@ public class UserDto {
   private int agree;
   private Date pwModifiedAt;
   private Date joinedAt;
+  private Date inactivedAt;
 }

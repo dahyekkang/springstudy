@@ -9,6 +9,7 @@
 <jsp:include page="../layout/header.jsp">
   <jsp:param value="약관동의" name="title" />
 </jsp:include>
+
 <script src="${contextPath}/resources/js/user_agree.js"></script>
 
 <div>
