@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
       userMapper.insertAccess(email);
       // insert, update, delete 이후엔 redirect! 반환타입이 없어서 컨트롤러를 통한 이동이 아님.
       try {
-        response.sendRedirect(request.getContextPath() + "/main.do");  // try-catch가 필요한 구문   // redirect
+        response.sendRedirect(request.getParameter("referer"));  // try-catch가 필요한 구문   // redirect
       } catch(Exception e) {
         e.printStackTrace();
       }

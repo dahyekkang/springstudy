@@ -27,7 +27,7 @@
       <c:if test="${sessionScope.user == null}">
         <ul>
           <li><a href="${contextPath}/user/login.form">로그인</a></li>
-          <li><a href="${contextPath}/user/join.form">회원가입</a></li>
+          <li><a href="${contextPath}/user/agree.form">회원가입</a></li>
         </ul>
       </c:if>
       <c:if test="${sessionScope.user != null}">
@@ -39,7 +39,7 @@
       <ul class="gnb">
         <li><a href="${contextPath}">댓글형게시판</a></li>
         <li><a href="${contextPath}">계층게시판</a></li>
-        <li><a href="${contextPath}">첨부계시판</a></li>
+        <li><a href="${contextPath}">첨부게시판</a></li>
         <li><a href="${contextPath}">MY</a></li>
       </ul>
     </div>
