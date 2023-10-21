@@ -60,11 +60,14 @@ public class BoardDao {
     int addResult = 0;
     try { 
       con = getConnection();
-      sql = "INSERT INTO MVC_BOARD_T VALUES(MVC_BOARD_SEQ.NEXTVAL, ?, ?, ?)";
+      sql = "INSERT INTO MVC_BOARD_T VALUES(MVC_BOARD_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?)";
       ps = con.prepareStatement(sql);
       ps.setString(1, board.getAuthor());
       ps.setString(2, board.getTitle());
       ps.setString(3, board.getContent());
+      ps.setInt(4, board.getHit());
+      ps.setString(5, board.getIp());
+      ps.setDate(6, board.getPostdate());
       addResult = ps.executeUpdate();
     } catch(Exception e) {
       e.printStackTrace();
@@ -75,22 +78,40 @@ public class BoardDao {
   }
   
   
+  public BoardDto getBoard(int no) {
+    BoardDto board = null;
+    try {
+      con = getConnection();
+      sql = "SELECT NO, AUTHOR, TITLE, CONTENT, HIT, IP, POSTDATE FROM MVC_BOARD_T WHERE NO = ?";
+      ps = con.prepareStatement(sql);
+      ps.setInt(1, no);
+      rs = ps.executeQuery();
+      if(rs.next()) {
+        board = new BoardDto(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6), rs.getDate(7));
+      }
+    } catch(Exception e) {
+      e.printStackTrace();
+    } finally {
+      close();
+    }
+    return board;
+  }
   
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+  public int removeBoard(int no) {
+    int result = 0;
+    try {
+      con = getConnection();
+      sql = "DELETE FROM MVC_BOARD_T WHERE NO = ?";
+      ps = con.prepareStatement(sql);
+      ps.setInt(1, no);
+      result = ps.executeUpdate();
+    } catch(Exception e) {
+      e.printStackTrace();
+    } finally {
+      close();
+    }
+    return result;
+  }
+   
 }

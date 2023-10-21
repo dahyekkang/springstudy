@@ -9,6 +9,23 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script>
+  $(function(){
+    fnInit();
+  })
+  
+  function fnInit(){
+    var addResult = '${addResult}';
+    if(addResult != '') {
+      if(addResult == '1'){
+        alert('공지사항이 등록되었습니다.');
+      } else {
+        alert('공지사항이 등록되지 않았습니다.');
+      }
+    }
+  }
+</script>
+
 </head>
 <body>
 

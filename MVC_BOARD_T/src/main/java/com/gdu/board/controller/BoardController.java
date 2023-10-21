@@ -37,4 +37,16 @@ public class BoardController {
     return "redirect:/board/list.do";
   }
   
+  @GetMapping("/detail.do")
+  public String detail(HttpServletRequest request, Model model) {
+    model.addAttribute("board", boardService.getBoard(request));
+    return "board/detail";
+  }
+  
+  @GetMapping("/remove.do")
+  public String remove(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute("removeResult", boardService.removeBoard(request));
+    return "redirect:/board/list.do";
+  }
+  
 }

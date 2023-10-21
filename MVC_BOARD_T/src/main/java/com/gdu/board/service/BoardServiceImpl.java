@@ -32,4 +32,18 @@ public class BoardServiceImpl implements BoardService {
     return boardDao.addBoard(board);
   }
   
+  @Override
+  public BoardDto getBoard(HttpServletRequest request) {
+    Optional<String> opt = Optional.ofNullable(request.getParameter("no"));
+    int no = Integer.parseInt(opt.orElse("0"));
+    return boardDao.getBoard(no);
+  }
+  
+  @Override
+  public int removeBoard(HttpServletRequest request) {
+    Optional<String> opt = Optional.ofNullable(request.getParameter("no"));
+    int no = Integer.parseInt(opt.orElse("0"));
+    return boardDao.removeBoard(no);
+  }
+  
 }

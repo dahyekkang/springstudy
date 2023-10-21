@@ -16,7 +16,7 @@
 
   function fnList() {
   	$('#btn_list').click(function(){
-	  location.href = '${contextPath}/notice/list.do';
+	  location.href = '${contextPath}/board/list.do';
 	})
 	
   }
