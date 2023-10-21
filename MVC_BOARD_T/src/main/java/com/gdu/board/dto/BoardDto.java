@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class BoardDto {
 
-  private int number;
+  private int no;
   private String author;
   private String title;
   private String content;

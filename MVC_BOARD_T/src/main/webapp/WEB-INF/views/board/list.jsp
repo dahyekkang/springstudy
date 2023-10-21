@@ -19,7 +19,7 @@
   <hr>
   
   <div>
-    <table>
+    <table border="1">
       <thead>
         <tr>
           <td>글번호</td>
@@ -31,10 +31,13 @@
       </thead>
       
       <tbody>
-        <c:forEach items="${boardList}" var="b">
+        <c:forEach items="${boardList}" var="board">
           <tr>
-            <td>${b.board_no}</td>
-            <td><a href="${contextPath}/board/detail.do?board_no=${b.board_no}">${b.title}</a></td>
+            <td>${board.no}</td>
+            <td><a href="${contextPath}/board/detail.do?no=${board.no}">${board.title}</a></td>
+            <td>${board.author}</td>
+            <td>${board.postdate}</td>
+            <td>${board.hit}</td>
           </tr>
         </c:forEach>
       </tbody>
