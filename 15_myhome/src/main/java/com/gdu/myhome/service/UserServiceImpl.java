@@ -2,6 +2,7 @@ package com.gdu.myhome.service;
 
 import java.io.PrintWriter;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gdu.myhome.dao.UserMapper;
 import com.gdu.myhome.dto.UserDto;
@@ -18,6 +20,7 @@ import com.gdu.myhome.util.MySecurityUtils;
 
 import lombok.RequiredArgsConstructor;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
@@ -79,6 +82,7 @@ public class UserServiceImpl implements UserService {
     
   }
   
+  @Transactional(readOnly=true)   // DB 수정이 없기 때문에 성능 향상을 위해 붙여준다.
   @Override
   public ResponseEntity<Map<String, Object>> checkEmail(String email) {
     
@@ -104,6 +108,195 @@ public class UserServiceImpl implements UserService {
                               , "<div>인증코드는 <strong>" + code + "</strong>입니다.</div>");
     return new ResponseEntity<>(Map.of("code", code), HttpStatus.OK);
  
+  }
+  
+  @Override
+  public void join(HttpServletRequest request, HttpServletResponse response) {
+    
+    String email = request.getParameter("email");
+    String pw = mySecurityUtils.getSHA256(request.getParameter("pw"));
+    String name = mySecurityUtils.preventXSS(request.getParameter("name"));
+    String gender = request.getParameter("gender");
+    String mobile = request.getParameter("mobile");
+    String postcode = request.getParameter("postcode");
+    String roadAddress = request.getParameter("roadAddress");
+    String jibunAddress = request.getParameter("jibunAddress");
+    String detailAddress = mySecurityUtils.preventXSS(request.getParameter("detailAddress"));
+    String event = request.getParameter("event");
+    
+    UserDto user = UserDto.builder()
+                    .email(email)
+                    .pw(pw)
+                    .name(name)
+                    .gender(gender)
+                    .mobile(mobile)
+                    .postcode(postcode)
+                    .roadAddress(roadAddress)
+                    .jibunAddress(jibunAddress)
+                    .detailAddress(detailAddress)
+                    .agree(event.equals("on") ? 1 : 0)
+                    .build();
+    
+    int joinResult = userMapper.insertUser(user);
+    
+    try {
+      
+      response.setContentType("text/html; charset=UTF-8");
+      PrintWriter out = response.getWriter();
+      out.println("<script>");
+      if(joinResult == 1) {
+        request.getSession().setAttribute("user", userMapper.getUser(Map.of("email", email)));
+        userMapper.insertAccess(email);
+        out.println("alert('회원 가입 되었습니다.')");
+        out.println("location.href='" + request.getContextPath() + "/main.do'");   // location.href는 redirect랑 같다.
+      } else {
+        out.println("alert('회원 가입을 실패했습니다.')");
+        out.println("history.go(-2)");
+      }
+      
+      out.println("</script>");
+      out.flush();
+      out.close();
+      
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
+    
+  }
+  
+  @Override
+  public ResponseEntity<Map<String, Object>> modify(HttpServletRequest request) {
+    
+    String name = mySecurityUtils.preventXSS(request.getParameter("name"));
+    String gender = request.getParameter("gender");
+    String mobile = request.getParameter("mobile");
+    String postcode = request.getParameter("postcode");
+    String roadAddress = request.getParameter("roadAddress");
+    String jibunAddress = request.getParameter("jibunAddress");
+    String detailAddress = mySecurityUtils.preventXSS(request.getParameter("detailAddress"));
+    String event = request.getParameter("event");
+    int agree = event.equals("on") ? 1 : 0;
+    int userNo = Integer.parseInt(request.getParameter("userNo"));
+    
+    UserDto user = UserDto.builder()
+                          .name(name)
+                          .gender(gender)
+                          .mobile(mobile)
+                          .postcode(postcode)
+                          .roadAddress(roadAddress)
+                          .jibunAddress(jibunAddress)
+                          .detailAddress(detailAddress)
+                          .agree(agree)
+                          .userNo(userNo)
+                          .build();
+    
+    int modifyResult = userMapper.updateUser(user);
+    
+    if(modifyResult == 1) {
+      // session의 정보를 수정할 필요가 있다!
+      HttpSession session = request.getSession();
+      UserDto sessionUser = (UserDto)session.getAttribute("user");
+      sessionUser.setName(name);
+      sessionUser.setGender(gender);
+      sessionUser.setMobile(mobile);
+      sessionUser.setPostcode(postcode);
+      sessionUser.setRoadAddress(roadAddress);
+      sessionUser.setJibunAddress(jibunAddress);
+      sessionUser.setDetailAddress(detailAddress);
+      sessionUser.setAgree(agree);
+    }
+    
+    return new ResponseEntity<>(Map.of("modifyResult", modifyResult), HttpStatus.OK);
+    
+  }
+  
+  
+  @Override
+  public void modifyPw(HttpServletRequest request, HttpServletResponse response) {
+    
+    String pw = mySecurityUtils.getSHA256(request.getParameter("pw"));
+    int userNo = Integer.parseInt(request.getParameter("userNo"));
+    
+    UserDto user = UserDto.builder()
+                    .pw(pw)
+                    .userNo(userNo)
+                    .build();
+    
+    int modifyPwResult = userMapper.updateUserPw(user);
+    
+    try {
+      
+      response.setContentType("text/html; charset=UTF-8");
+      PrintWriter out = response.getWriter();
+      out.println("<script>");
+      if(modifyPwResult == 1) {
+        HttpSession session = request.getSession();
+        UserDto sessionUser = (UserDto)session.getAttribute("user");
+        sessionUser.setPw(pw);
+        out.println("alert('비밀번호가 수정되었습니다.')");
+        out.println("location.href='" + request.getContextPath() + "/user/mypage.form'");
+      } else {
+        out.println("alert('비밀번호가 수정되지 않았습니다.')");
+        out.println("history.back()");
+      }
+      out.println("</script>");
+      out.flush();
+      out.close();
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+  }
+  
+  @Override
+  public void leave(HttpServletRequest request, HttpServletResponse response) {
+    
+    Optional<String> opt = Optional.ofNullable(request.getParameter("userNo"));   // 만약 세션이 만료된 상태로 탈퇴 버튼을 누르면 userNo가 오지 않는다.
+    int userNo = Integer.parseInt(opt.orElse("0"));
+    
+    UserDto user = userMapper.getUser(Map.of("userNo", userNo));
+    
+    if(user == null) {    // 만약 로그인이 풀려서 user가 없으면, 다른 응답을 만든다.
+      try {
+        response.setContentType("text/html; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        out.println("<script>");
+        out.println("alert('회원 탈퇴를 수행할 수 없습니다.')");
+        out.println("location.href='" + request.getContextPath() + "/main.do'");
+        out.println("</script>");
+        out.flush();
+        out.close();
+      } catch(Exception e) {
+        e.printStackTrace();
+      }
+    }
+    
+    int insertLeaveResult = userMapper.insertLeaveUser(user);
+    int deleteUserResult = userMapper.deleteUser(user);
+    
+    try {
+      
+      response.setContentType("text/html; charset=UTF-8");
+      PrintWriter out = response.getWriter();
+      out.println("<script>");
+      if(insertLeaveResult == 1 && deleteUserResult == 1) {       // 탈퇴 성공
+        HttpSession session = request.getSession();
+        session.invalidate();   // session 초기화. 이걸 안 하면 탈퇴했는데 로그인이 되어있음. 탈퇴 시 필수 !
+        out.println("alert('회원 탈퇴되었습니다. 그 동안 이용해 주셔서 감사합니다.')");
+        out.println("location.href='" + request.getContextPath() + "/main.do'");
+      } else {
+        out.println("alert('회원 탈퇴되지 않았습니다.')");
+        out.println("history.back()");
+      }
+      out.println("</script>");
+      out.flush();
+      out.close();
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
   }
   
   

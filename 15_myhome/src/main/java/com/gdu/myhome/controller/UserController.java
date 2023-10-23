@@ -34,12 +34,12 @@ public class UserController {
   }
   
   @PostMapping("/login.do")
-  public void login(HttpServletRequest request, HttpServletResponse response) {
+  public void login(HttpServletRequest request, HttpServletResponse response) {   // 반환 타입이 void : 서비스 안에서 직접 이동한다.(redirect)
     userService.login(request, response);
   }
   
   @GetMapping("/logout.do")
-  public void logout(HttpServletRequest request, HttpServletResponse response) {
+  public void logout(HttpServletRequest request, HttpServletResponse response) {   // 반환 타입이 void : 서비스 안에서 직접 이동한다.(redirect)
     userService.logout(request, response);
   }
   
@@ -74,9 +74,30 @@ public class UserController {
   }
   
   
+  @PostMapping(value="/join.do")
+  public void join(HttpServletRequest request, HttpServletResponse response) {    // 반환 타입이 void : 서비스 안에서 직접 이동한다.(location.href)
+    userService.join(request, response);
+  }
   
+  @GetMapping("/mypage.form")
+  public String mypageForm() {
+    return "user/mypage";
+  }
   
+  @PostMapping(value="/modify.do", produces=MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Map<String, Object>> modify(HttpServletRequest request) {
+    return userService.modify(request);
+  }
   
+  @GetMapping("/pw.do")
+  public String pw() {
+    return "user/pw";
+  }
+  
+  @PostMapping("/leave.do")
+  public void leave(HttpServletRequest request, HttpServletResponse response) {
+    userService.leave(request, response);
+  }
   
   
   

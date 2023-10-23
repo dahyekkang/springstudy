@@ -22,3 +22,5 @@ INSERT INTO MVC_BOARD_T VALUES (MVC_BOARD_SEQ.NEXTVAL, '제시카', '나눔합�
 INSERT INTO MVC_BOARD_T VALUES (MVC_BOARD_SEQ.NEXTVAL, '에밀리', '책 드려요', '책 드림합니다', 10, '127.0.0.1', SYSDATE);
 INSERT INTO MVC_BOARD_T VALUES (MVC_BOARD_SEQ.NEXTVAL, '엠마', '출석입니다', '출석!', 2, '127.0.0.1', SYSDATE);
 COMMIT;
+
+SELECT * FROM MVC_BOARD_T;

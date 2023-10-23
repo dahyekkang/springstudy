@@ -24,7 +24,7 @@ CREATE TABLE USER_T (
     JIBUN_ADDRESS   VARCHAR2(100 BYTE)                  ,       -- 지번주소
     DETAIL_ADDRESS  VARCHAR2(100 BYTE)                  ,       -- 상세주소
     AGREE           NUMBER              NOT NULL        ,       -- 서비스 동의 여부(0:필수, 1:이벤트)
-    PW_MODIFIED_AT  DATE                                ,       -- 비밀번호
+    PW_MODIFIED_AT  DATE                                ,       -- 비밀번호 수정일
     JOINED_AT       DATE                                ,       -- 가입일
     CONSTRAINT PK_USER PRIMARY KEY(USER_NO)
 );
