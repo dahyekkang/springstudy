@@ -89,18 +89,19 @@ public class UserController {
     return userService.modify(request);
   }
   
-  @GetMapping("/pw.do")
-  public String pw() {
+  @GetMapping("/modifyPw.form")
+  public String modifyPwForm() {
     return "user/pw";
+  }
+  
+  @GetMapping("/modifyPw.do")
+  public void modifyPw(HttpServletRequest request, HttpServletResponse response) {
+    userService.modifyPw(request, response);
   }
   
   @PostMapping("/leave.do")
   public void leave(HttpServletRequest request, HttpServletResponse response) {
     userService.leave(request, response);
   }
-  
-  
-  
-  
-  
+
 }

@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
- * LoginStatusCheckInterceptor
- * 로그인이 필요한 기능을 요청할 때 로그인 여부를 점검하는 인터셉터
+ * ShouldNotLoginInterceptor
+ * 로그아웃 상태일 때 가능한 기능을 로그인 상태로 요청할 때 로그인 여부를 점검하는 인터셉터
  */
 
 

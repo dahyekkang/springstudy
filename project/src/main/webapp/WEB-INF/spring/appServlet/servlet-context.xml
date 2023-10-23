@@ -21,25 +21,8 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 	
-	<context:component-scan base-package="com.gdu.myhome" />
+	<context:component-scan base-package="com.gdu.app999" />
 	
-	<interceptors>
-    
-    <interceptor>
-      <mapping path="/user/mypage.form" />
-      <mapping path="/user/modifyPw.form" />
-      <beans:bean class="com.gdu.myhome.intercept.RequiredLoginInterceptor" />
-    </interceptor>
-    
-    <interceptor>
-      <mapping path="/user/agree.form" />
-      <mapping path="/user/join.form" />
-      <mapping path="/user/login.form" />
-      <beans:bean class="com.gdu.myhome.intercept.ShouldNotLoginInterceptor" />
-    </interceptor>
-    
-  </interceptors>
-  
-  
+	
 	
 </beans:beans>

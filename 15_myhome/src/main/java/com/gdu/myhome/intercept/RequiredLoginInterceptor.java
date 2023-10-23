@@ -16,7 +16,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 
 @Component    // Bean으로 등록하기 위해 객체로 만든다.
-public class LoginStatusCheckInterceptor implements HandlerInterceptor {    // intercept를 만들 때 꼭 인터페이스 지정
+public class RequiredLoginInterceptor implements HandlerInterceptor {    // intercept를 만들 때 꼭 인터페이스 지정
   
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

@@ -35,7 +35,8 @@ public class UserServiceImpl implements UserService {
     String email = request.getParameter("email");
     String pw = mySecurityUtils.getSHA256(request.getParameter("pw"));
     
-    Map<String, Object> map = Map.of("email", email, "pw", pw);
+    Map<String, Object> map = Map.of("email", email
+                                   , "pw", pw);
     
     UserDto user = userMapper.getUser(map);
     
@@ -92,7 +93,7 @@ public class UserServiceImpl implements UserService {
                        && userMapper.getLeaveUser(map) == null
                        && userMapper.getInactiveUser(map) == null;
     
-    return new ResponseEntity<>(Map.of("enableEmail", enableEmail), HttpStatus.OK);  // ResponseEntity<Map<String,Object>>에서 Map<>는 생략 가능
+    return new ResponseEntity<>(Map.of("enableEmail", enableEmail), HttpStatus.OK);  // ResponseEntity<Map<String,Object>>에서 Map<String,Object>는 생략 가능
   }
   
   
@@ -147,11 +148,11 @@ public class UserServiceImpl implements UserService {
       if(joinResult == 1) {
         request.getSession().setAttribute("user", userMapper.getUser(Map.of("email", email)));
         userMapper.insertAccess(email);
-        out.println("alert('회원 가입 되었습니다.')");
+        out.println("alert('회원 가입되었습니다.')");
         out.println("location.href='" + request.getContextPath() + "/main.do'");   // location.href는 redirect랑 같다.
       } else {
         out.println("alert('회원 가입을 실패했습니다.')");
-        out.println("history.go(-2)");
+        out.println("history.go(-2)");    // 두 단계 이전의 페이지로 이동
       }
       
       out.println("</script>");
@@ -272,7 +273,7 @@ public class UserServiceImpl implements UserService {
       }
     }
     
-    int insertLeaveResult = userMapper.insertLeaveUser(user);
+    int insertLeaveUserResult = userMapper.insertLeaveUser(user);
     int deleteUserResult = userMapper.deleteUser(user);
     
     try {
@@ -280,7 +281,7 @@ public class UserServiceImpl implements UserService {
       response.setContentType("text/html; charset=UTF-8");
       PrintWriter out = response.getWriter();
       out.println("<script>");
-      if(insertLeaveResult == 1 && deleteUserResult == 1) {       // 탈퇴 성공
+      if(insertLeaveUserResult == 1 && deleteUserResult == 1) {       // 탈퇴 성공
         HttpSession session = request.getSession();
         session.invalidate();   // session 초기화. 이걸 안 하면 탈퇴했는데 로그인이 되어있음. 탈퇴 시 필수 !
         out.println("alert('회원 탈퇴되었습니다. 그 동안 이용해 주셔서 감사합니다.')");

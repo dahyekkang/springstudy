@@ -21,7 +21,7 @@ public class InactiveUserDto {
   private String postcode;
   private String roadAddress;
   private String jibunAddress;
-  private String DetailAddress;
+  private String detailAddress;
   private int agree;
   private Date pwModifiedAt;
   private Date joinedAt;

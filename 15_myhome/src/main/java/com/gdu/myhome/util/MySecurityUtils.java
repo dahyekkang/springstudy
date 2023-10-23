@@ -26,7 +26,6 @@ public class MySecurityUtils {
     } catch(Exception e) {
       e.printStackTrace();
     }
-    
     return sb.toString();
   }
   
@@ -35,6 +34,7 @@ public class MySecurityUtils {
     return RandomStringUtils.random(count, letters, numbers);
   }
   
+  // 크로스 사이트 스크립팅(XSS) : 공격자가 웹사이트에 악성 클라이언트 사이드 코드를 삽입할 수 있도록 하는 보안 취약점 공격
   // 크로스 사이트 스크립팅(Cross Site Scripting) 방지
   public String preventXSS(String source) {
     return source.replace("<", "&lt;").replace(">", "&gt;");
