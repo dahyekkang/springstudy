@@ -1,0 +1,72 @@
+1. open jdk 11 설치 (무료 jdk)
+  1) 패키지 목록 업데이트
+    sudo apt-get update
+  2) 패키지 목록에서 open jdk 11 확인
+    sudo apt-cache search oepnjdk
+  3) 설치
+    sudo apt-get install -y openjdk-11-jdk
+  4) 자바설치확인
+    java -- version
+  5) 자바 설치 경로 확인
+    update-alternatives --list java
+ 6) 환경변수 설정(JAVA_HOME 생성 & PATH 추가)
+    vi ~/.bashrc
+    마지막 줄에 다음을 추가
+    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+    export PATH=$JAVA_HOME/bin:$PATH
+  7) 환경변수 적용
+    source ~/.bashrc
+
+2. tomcat 설치 (tomcat을 다운로드 받아서 압축풀기, 그 압축 푼 걸 CATALINA_HOME에 등록하겠다.)
+  1) tomcat 다운로드 주소를 복사한다.
+    - tomcat.apache.org - download 9 - tar.gz 우클릭 - 링크 주소 복사
+    - https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.82/bin/apache-tomcat-9.0.82.tar.gz
+  2) tomcat을 다운로드 받을 곳으로 이동한다.
+    cd /opt
+  3) tomcat을 다운로드 받는다.
+    sudo wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.82/bin/apache-tomcat-9.0.82.tar.gz
+  4) apache-tomcat-9.0.82.tar.gz 파일의 압축을 푼다.
+    sudo tar -xzvf /opt/appache-tomcat-9.0.82.tar.gz
+    -x : 압축 풀 때 사용
+    -z : tar.gz 파일을 한 번에 압축 풀 때 사용 (tar.gz 파일을 원래 2번에 걸쳐 압축 풀어야 한다. gz 먼저, 다음 tar)
+    -v : 처리 과정을 화면에 자세히 나열
+    -f : 대상 tar 아카이브 파일 지정 기본 옵션
+    -c : 압축 파일 만들 때 사용 (여기선 사용 안 했음)
+  * 옵션 순서는 상관 없다!
+  5) 압축이 풀린 폴더명을 간단(tomcat9)하게 변경한다.
+    sudo mv apache-tomcat-9.0.82 tomcat9
+  6) 환경변수 설정
+    vi ~/.bashrc
+   마지막 줄에 다음을 추가
+    export CATALINA_HOME=/opt/tomcat9
+    export PATH=$CATALINA_HOME/bin:$PATH
+  7) 환경변수 적용
+    source ~/.bashrc
+  8) tomcat9 디렉터리의 소유권 변경
+    sudo chown -R goodee:goodee /opt/tomcat9
+  9) 소유권 변경 확인
+    ll (ls - alF)
+  10) 방화벽 설정 (8080 포트 허용)
+    sudo ufw allow 8080
+  11) Virtual Box는 외부에서 접속하려면 "포트포워딩"이 필요하다. (Virtual Box로 연습하기 때문에 11번이 필요한 것)
+    VirtualBox - [머신] - [설정] - [네트워크] - [어댑터1] - [포트포워드] 버튼
+    호스트 PC와 게스트 PC의 주소, 포트 8080 등록
+  12) war를 배포한다.
+    app999.war를 /opt/tomcat9/webapps 디렉터리로 옮긴다. (filezilla 사용해 보기)
+    [파일] - [사이트 관리자]
+    - 프로토콜 : SFTP (SSH FTP)
+    - 포트번호 : 22
+    - 호스트    : 192.168.56.1
+    - 사용자    : goodee
+    - 비밀번호 : 1111
+    ---------------------------------------------------
+    -  좌측    	|     우측
+    -  PC      	|     서버
+		|
+    - app999.war    ->     /opt/tomcat9/webapps
+  13) tomcat을 실행한다.
+    /opt/tomcat9/bin/startup.sh
+  14) 웹 브라우저를 열고 아래 주소를 입력한다. (8080으로 하면 포트 충돌나서 9090으로!)
+    http://192.168.56.1:9090/app999
+  15) tomcat을 종료한다.
+    /opt/tomcat/bin/shutdown.sh

@@ -19,4 +19,8 @@ public interface UserMapper {
   public int updateUserPw(UserDto user);
   public int insertLeaveUser(UserDto user);
   public int deleteUser(UserDto user);
+  public int insertInactiveUser();
+  public int deleteUserForInactive();
+  public int insertActiveUser(String email);
+  public int deleteInactiveUser(String email);
 }
