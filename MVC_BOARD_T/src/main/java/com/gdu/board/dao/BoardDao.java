@@ -60,14 +60,13 @@ public class BoardDao {
     int addResult = 0;
     try { 
       con = getConnection();
-      sql = "INSERT INTO MVC_BOARD_T VALUES(MVC_BOARD_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?)";
+      sql = "INSERT INTO MVC_BOARD_T VALUES(MVC_BOARD_SEQ.NEXTVAL, ?, ?, ?, ?, ?, SYSDATE)";
       ps = con.prepareStatement(sql);
       ps.setString(1, board.getAuthor());
       ps.setString(2, board.getTitle());
       ps.setString(3, board.getContent());
       ps.setInt(4, board.getHit());
       ps.setString(5, board.getIp());
-      ps.setDate(6, board.getPostdate());
       addResult = ps.executeUpdate();
     } catch(Exception e) {
       e.printStackTrace();

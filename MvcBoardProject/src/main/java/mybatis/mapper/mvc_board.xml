@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="mybatis.mapper.mvc_board">
+
+	<select id="selectMvcBoardList" resultType="domain.MvcBoard">
+		SELECT NO, AUTHOR, TITLE, CONTENT, HIT, IP, POSTDATE
+		  FROM MVC_BOARD
+		 ORDER BY NO DESC
+	</select>
+
+	<select id="selectMvcBoardByNo" parameterType="int" resultType="domain.MvcBoard">
+		SELECT NO, AUTHOR, TITLE, CONTENT, HIT, IP, POSTDATE
+		  FROM MVC_BOARD
+		 WHERE NO = #{no}
+	</select>
+
+	<insert id="insertMvcBoard" parameterType="domain.MvcBoard">
+		INSERT INTO MVC_BOARD
+		VALUES (MVC_BOARD_SEQ.NEXTVAL, #{author}, #{title}, #{content}, 0, #{ip}, SYSDATE)
+	</insert>
+	
+	<delete id="deleteMvcBoard" parameterType="int">
+		DELETE
+		  FROM MVC_BOARD
+		 WHERE NO = #{no}
+	</delete>
+	
+	<update id="updateMvcBoardHit" parameterType="int">
+		UPDATE MVC_BOARD 
+		   SET HIT = HIT + 1
+		 WHERE NO = #{no}
+	</update>
+	
+	<select id="selectMvcBoardBestHit" resultType="domain.MvcBoard">
+		SELECT A.TITLE, A.CONTENT, A.HIT 
+		  FROM (SELECT TITLE, CONTENT, HIT 
+		          FROM MVC_BOARD 
+		         ORDER BY HIT DESC) A
+		 WHERE ROWNUM = 1
+	</select>
+	
+</mapper>

@@ -29,6 +29,8 @@ public class BoardServiceImpl implements BoardService {
     board.setAuthor(request.getParameter("author"));
     board.setTitle(request.getParameter("title"));
     board.setContent(request.getParameter("content"));
+    board.setHit(Integer.parseInt(request.getParameter("hit")));
+    board.setIp(request.getParameter("ip"));
     return boardDao.addBoard(board);
   }
   

@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service  // @Service를 붙이면 Component가 된다.
-public class MembereviceImpl implements MemberService {
+public class MemberServiceImpl implements MemberService {
 
   private final MemberMapper memberMapper;
   private final PageUtil pageUtil;    // 가져오려면 pageutil을 bean으로 만들어주어야 한다. 그래야 @Autowired로 가져올 수 있음!
