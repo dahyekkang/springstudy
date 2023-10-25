@@ -46,13 +46,31 @@ public class UserController {
     
   }
   
-  @GetMapping("/naver/getProfile.do")   // accessToken 받아야 한다!
-  public void getProfile(@RequestParam String accessToken) throws Exception {   // 사용자 프로필 정보를 UserDto로 넘긴다!
+  @GetMapping("/naver/getProfile.do")   // accessToken 받아야 한다! (위 메소드에서 가져옴)
+  public String getProfile(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {   // 사용자 프로필 정보를 UserDto로 넘긴다!
   
     // 네이버로그인-3
-    UserDto user = userService.getNaverProfile(accessToken);
-    System.out.println(user);
+    UserDto naverProfile = userService.getNaverProfile(request.getParameter("accessToken"));
+    // System.out.println(naverProfile);      // 요청한 사람의 프로필 정보가 들어있음
     
+    // 네이버 로그인 후속 작업(처음 시도 : 간편가입, 이미 가입 : 로그인)(email을 가진 유저가 DB에 있는지 확인해야한다.)
+    UserDto user = userService.getUser(naverProfile.getEmail());
+    if(user == null) {
+      // 네이버간편가입 (정보가 입력된 화면으로 이동)
+      model.addAttribute("naverProfile", naverProfile);     // 네이버 프로필을 저장시켜놓고 가입 화면으로 forward 할 것이다.
+      return "user/naver_join";   // jsp에서 el로 naverProfile을 받을 수 있다.
+    } else {
+      // naverProfile로 로그인 처리하기
+      userService.naverLogin(request, response, naverProfile);
+      return "redirect:/main.do";
+    }
+    
+  }
+  
+  
+  @PostMapping("/naver/join.do")
+  public void naverJoin(HttpServletRequest request, HttpServletResponse response) {
+    userService.naverJoin(request, response);
   }
   
   @PostMapping("/login.do")
@@ -116,7 +134,7 @@ public class UserController {
     return "user/pw";
   }
   
-  @GetMapping("/modifyPw.do")
+  @PostMapping("/modifyPw.do")
   public void modifyPw(HttpServletRequest request, HttpServletResponse response) {
     userService.modifyPw(request, response);
   }

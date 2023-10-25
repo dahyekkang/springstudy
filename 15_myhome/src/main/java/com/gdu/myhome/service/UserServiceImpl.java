@@ -93,9 +93,12 @@ public class UserServiceImpl implements UserService {
     
     String apiURL = "https://nid.naver.com/oauth2.0/authorize";
     String response_type = "code";
+    
+    // 어디로 데이터를 받을지 : redirect_uri
     String redirect_uri = URLEncoder.encode("http://localhost:8080" + request.getContextPath() + "/user/naver/getAccessToken.do", "UTF-8");   // 예외 처리 필요 -> throws Exceptio으로 처리
     String state = new BigInteger(130, new SecureRandom()).toString();        // session에 보관하기 위해 변수 처리
     
+    // 주소에 파라미터를 붙이기
     StringBuilder sb = new StringBuilder();
     sb.append(apiURL);
     sb.append("?response_type=").append(response_type);
@@ -103,18 +106,19 @@ public class UserServiceImpl implements UserService {
     sb.append("&redirect_uri=").append(redirect_uri);
     sb.append("&state=").append(state);
     
-    request.getSession().setAttribute("state", state);                        // session에 저장
-    
-    return sb.toString();
+    return sb.toString();     // 주소를 반환
   }
   
   @Override
   public String getNaverLoginAccessToken(HttpServletRequest request) throws Exception {
+    
     // 네이버로그인-2
     // 접근 토큰 발급 요청
     // 네이버로그인-2를 수행하기 위해서는 네이버로그인-1의 응답 결과인 code와 state가 필요하다.
     
-    // 네이버로그인-1의 응답 결과
+    // redirect_uri 주소로 첫 번째 요청에 대한 응답 결과인 code와 state값을 받는다.
+    
+    // 네이버로그인-1의 응답 결과(access_token을 얻기 위해 요청 파라미터로 사용해야 함) (네이버가 보내준 거 다시 보내주기)
     String code = request.getParameter("code");
     String state = request.getParameter("state");
     
@@ -130,7 +134,7 @@ public class UserServiceImpl implements UserService {
     sb.append("&code=").append(code);
     sb.append("&state=").append(state);
     
-    // 요청
+    // 요청 (재요청)
     URL url = new URL(sb.toString());
     HttpURLConnection con = (HttpURLConnection)url.openConnection();
     con.setRequestMethod("GET");    // 반드시 대문자로 작성
@@ -150,8 +154,9 @@ public class UserServiceImpl implements UserService {
       responseBody.append(line);      // 한 줄씩 StringBuilder에 추가
     }
     
+    // 응답 받은 데이터를 문자열로 바꾼 뒤, json data로
     JSONObject obj = new JSONObject(responseBody.toString());   // NAVER가 제공해준 accessToken(JSON) -> JSON PARSING하는 LIBRARY 필요 - JSON In JAVA !
-    return obj.getString("access_token");
+    return obj.getString("access_token");  // 잘못된 요청과 응답, 뭔가 잘못되면 null일수도 있어서 null처리하면 좋음
   }
   
   @Override
@@ -166,7 +171,7 @@ public class UserServiceImpl implements UserService {
     URL url = new URL(apiURL);
     HttpURLConnection con = (HttpURLConnection)url.openConnection();
     con.setRequestMethod("GET");     // 방식은 GET/POST 둘다 되는데 GET으로 하겠다.
-    con.setRequestProperty("Authorization", "Bearer " + accessToken);
+    con.setRequestProperty("Authorization", "Bearer " + accessToken);   // 네이버가 지정한 형식
     
     // 응답
     BufferedReader reader = null;
@@ -196,6 +201,83 @@ public class UserServiceImpl implements UserService {
     return user;
 
   }
+  
+  @Override
+  public UserDto getUser(String email) {
+    return userMapper.getUser(Map.of("email", email));    // email만 가져와도 된다.
+  }
+  
+  @Override
+  public void naverJoin(HttpServletRequest request, HttpServletResponse response) {
+    
+    String email = request.getParameter("email");
+    String name = request.getParameter("name");       // naver로부터 온 이름 정보 preventXSS 할 필요 X
+    String gender = request.getParameter("gender");
+    String mobile = request.getParameter("mobile");   // 하이픈 제거 필요
+    String event = request.getParameter("event");
+   
+    
+    UserDto user = UserDto.builder()
+                    .email(email)
+                    .name(name)
+                    .gender(gender)
+                    .mobile(mobile.replace("-", ""))
+                    .agree(event != null ? 1 : 0)   // agree에서 on과 off값을 가공해서 join으로 보냈었기 때문에 코드가 달라진다.
+                    .build();
+    
+    int naverJoinResult = userMapper.insertNaverUser(user);
+    
+    try {
+      
+      response.setContentType("text/html; charset=UTF-8");
+      PrintWriter out = response.getWriter();
+      out.println("<script>");
+      if(naverJoinResult == 1) {
+        request.getSession().setAttribute("user", userMapper.getUser(Map.of("email", email)));
+        userMapper.insertAccess(email);
+        out.println("alert('네이버 간편가입이 완료되었습니다.')");
+      } else {
+        out.println("alert('네이버 간편가입을 실패했습니다.')");
+      }      
+      out.println("location.href='" + request.getContextPath() + "/main.do'");   // location.href는 redirect랑 같다.
+      out.println("</script>");
+      out.flush();
+      out.close();
+      
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
+    
+  }
+  
+  @Override
+  public void naverLogin(HttpServletRequest request, HttpServletResponse response, UserDto naverProfile) throws Exception {
+    
+    String email = naverProfile.getEmail();
+    UserDto user = userMapper.getUser(Map.of("email", email));
+    
+    if(user != null) {
+      request.getSession().setAttribute("user", user);
+      userMapper.insertAccess(email);
+      // redirect는 controller에서.
+    } else {
+      response.setContentType("text/html; charset=UTF-8");    // 그런 이메일 없다 -> alert창 띄우려면 script할 것이다.
+      PrintWriter out = response.getWriter();
+      out.println("<script>");
+      out.println("alert('일치하는 회원 정보가 없습니다.')");
+      // out.println("history.back()");    // 다시 로그인 페이지로 돌아간다. 안 쓰는 게 좋다. 그냥 어디로 갈 지를 정해주는 게 나음
+      out.println("location.href='" + request.getContextPath() + "/main.do'");
+      out.println("</script>");
+      out.flush();
+      out.close();
+    }
+    
+    // 네이버 로그인한 뒤, 비밀번호 변경을 하면 일반 로그인으로 변경됨.
+    
+  }
+  
+  
+  
   
   @Override
   public void logout(HttpServletRequest request, HttpServletResponse response) {

@@ -20,10 +20,10 @@
     
     <div>
       <div>
-      <label for="email">이메일</label>
-      <input type="text" name="email" id="email">
-      <button type="button" id="btn_get_code">인증코드받기</button>
-      <span id="msg_email"></span>      
+        <label for="email">이메일</label>
+        <input type="text" name="email" id="email">
+        <button type="button" id="btn_get_code">인증코드받기</button>
+        <span id="msg_email"></span>      
       </div>
       <div>
         <input type="text" id="code" placeholder="인증코드입력" disabled>
