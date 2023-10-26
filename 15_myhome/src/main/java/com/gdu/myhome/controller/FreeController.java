@@ -12,6 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.gdu.myhome.service.FreeService;
 
 import lombok.RequiredArgsConstructor;
+import oracle.jdbc.proxy.annotation.Post;
 
 @RequestMapping("/free")
 @RequiredArgsConstructor
@@ -36,6 +37,13 @@ public class FreeController {
   public String list(HttpServletRequest request, Model model) {
     freeService.loadFreeList(request, model);
     return "free/list";
+  }
+  
+  @PostMapping("addReply.do")
+  public String addReply(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+    int addReplyResult = freeService.addReply(request);
+    redirectAttributes.addFlashAttribute("addReplyResult", addReplyResult);
+    return "redirect:'free/list.do";
   }
   
 }

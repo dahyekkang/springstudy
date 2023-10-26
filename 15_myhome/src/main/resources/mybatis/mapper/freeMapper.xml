@@ -5,6 +5,7 @@
 
 <mapper namespace="com.gdu.myhome.dao.FreeMapper">
 
+  <!-- 원글 달기 -->
   <insert id="insertFree" parameterType="FreeDto">
     INSERT INTO FREE_T (
         FREE_NO
@@ -34,14 +35,43 @@
   
   <select id="getFreeList" parameterType="Map" resultType="FreeDto">
     SELECT FREE_NO, EMAIL, CONTENTS, CREATED_AT, STATUS, DEPTH, GROUP_NO, GROUP_ORDER
-      FROM (SELECT ROW_NUMBER() OVER(ORDER BY FREE_NO DESC) AS RN, FREE_NO, EMAIL, CONTENTS, CREATED_AT, STATUS, DEPTH, GROUP_NO, GROUP_ORDER
+      FROM (SELECT ROW_NUMBER() OVER(ORDER BY GROUP_NO DESC, GROUP_ORDER ASC) AS RN, FREE_NO, EMAIL, CONTENTS, CREATED_AT, STATUS, DEPTH, GROUP_NO, GROUP_ORDER
               FROM FREE_T)
      WHERE RN BETWEEN #{begin} AND #{end}
   </select>
 
 
+  <!-- 댓글 달기 1 : 기존 댓글들의 GROUP_ORDER를 증가시키기 -->
+  <!-- 원글과 같은 GROUP_NO를 가진 게시물 중 원글의 GROUP_ORDER보다 큰 GROUP_ORDER값을 가진 게시물들의 GROUP_ORDER값을 1씩 증가-->
+  <update id="updateGroupOrder" parameterType="FreeDto">  <!-- parameterType="FreeDto"는 원글을 의미함  -->
+    UPDATE FREE_T
+       SET GROUP_ORDER = GROUP_ORDER + 1
+     WHERE GROUP_NO = #{groupNO}
+       AND GROUP_ORDER > #{groupOrder}
+  </update>
 
-
+  <!-- 댓글 달기 2 : 댓글 삽입하기 -->
+  <insert id="insertReply" parameterType="FreeDto">   <!-- parameterType="FreeDto"는 댓글을 의미함  -->
+    INSERT INTO FREE_T (
+        FREE_NO
+      , EMAIL
+      , CONTENTS
+      , CREATED_AT
+      , STATUS
+      , DEPTH
+      , GROUP_NO
+      , GROUP_ORDER
+    ) VALUES (
+        FREE_SEQ.NEXTVAL
+      , #{email}
+      , #{contents}
+      , SYSTIMESTAMP
+      , 1
+      , #{depth}
+      , #{groupNo}
+      , #{groupOrder}
+    )
+  </insert>
 
 
 
