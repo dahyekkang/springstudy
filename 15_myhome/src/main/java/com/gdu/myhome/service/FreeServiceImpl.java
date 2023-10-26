@@ -1,5 +1,6 @@
 package com.gdu.myhome.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -102,9 +103,41 @@ public class FreeServiceImpl implements FreeService {
     
   }
   
+  @Override
+  public int removeFree(int freeNo) {
+    return freeMapper.deleteFree(freeNo);
+  }
   
-  
-  
+  @Override
+  public void loadSearchList(HttpServletRequest request, Model model) {
+
+    String column = request.getParameter("column");
+    String query = request.getParameter("query");
+    
+    Map<String, Object> map = new HashMap<>();
+    map.put("column", column);
+    map.put("query", query);
+    
+    int total = freeMapper.getSearchCount(map);
+    
+    Optional<String> opt = Optional.ofNullable(request.getParameter("page"));
+    String strPage = opt.orElse("1");
+    int page = Integer.parseInt(strPage);
+    
+    int display = 10;
+    
+    myPageUtils.setPaging(page, total, display);
+    
+    map.put("begin", myPageUtils.getBegin());
+    map.put("end", myPageUtils.getEnd());
+    
+    List<FreeDto> freeList = freeMapper.getSearchList(map);
+    
+    model.addAttribute("freeList", freeList);
+    model.addAttribute("paging", myPageUtils.getMvcPaging(request.getContextPath() + "/free/search.do?column=" + column + "&query=" + query));
+    model.addAttribute("beginNo", total - (page - 1) * display);  // 21-(2-1)*10 = 11 : 2페이지 시작값
+    
+  }
   
   
   

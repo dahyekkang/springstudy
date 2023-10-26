@@ -69,7 +69,8 @@ FREE_NO		CONTENTS		DEPTH	GROUP_NO	GROUP_ORDER
 
 
 
-
+MyPageUtils - getMvcPaging
+ServiceImpl - loadSearchList()
 
 
 

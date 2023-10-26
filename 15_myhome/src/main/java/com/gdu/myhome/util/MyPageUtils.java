@@ -66,7 +66,7 @@ public class MyPageUtils {
       if(p == page) {
         sb.append("<a>" + p + "</a>");
       } else {
-        sb.append("<a href=\"" + url + "?page=" + p + "\">" + p + "</a>");
+        sb.append("<a href=\"" + url + "&page=" + p + "\">" + p + "</a>");
       }
     }
     
