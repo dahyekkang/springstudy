@@ -29,7 +29,8 @@
     fnUpload();
     fnCkeditor();
   })
-  
+   
+  // 첨부게시판에서 필요
   function fnFileCheck(){
     $('.files').change(function(){
       console.log(this.files);
@@ -57,6 +58,7 @@
     })
   }
   
+  // ajax 파일 첨부 시 필요
   function fnUpload(){
     $('#btn_upload').click(function(){
       // ajax 파일 첨부는 FormData 객체를 생성해서 data로 전달한다.

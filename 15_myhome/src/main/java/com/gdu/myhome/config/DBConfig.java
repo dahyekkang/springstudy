@@ -19,13 +19,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+// 접속용
+
 @EnableTransactionManagement                       // @Transactional 동작을 허용한다.
 @EnableAspectJAutoProxy                            // @Aspect 허용 - AOP 동작을 허용한다. (Configuration이 있는 클래스에서 사용)
 @EnableScheduling                                  // @Scheduled를 허용한다.
 @MapperScan(basePackages="com.gdu.myhome.dao")     // @Mapper를 찾을 패키지
 @PropertySource(value="classpath:application.properties")
 @Configuration
-public class AppConfig {
+public class DBConfig {
   
   @Autowired
   private Environment env;

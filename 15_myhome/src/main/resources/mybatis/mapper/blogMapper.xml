@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gdu.myhome.dao.BlogMapper">
+
+  <insert id="insertBlog" parameterType="BlogDto">
+    INSERT INTO BlOG_T (
+        BLOG_NO
+      , TITLE
+      , CONTENTS
+      , USER_NO
+      , IP
+      , CREATED_AT
+      , MODIFIED_AT
+    ) VALUES( 
+        BLOG_SEQ.NEXTVAL
+      , #{title}
+      , #{contents}
+      , #{userNo}
+      , #{ip}
+      , TO_CHAR(SYSDATE, 'YYYY-MM-DD HH:MI:SS')
+      , TO_CHAR(SYSDATE, 'YYYY-MM-DD HH:MI:SS')
+    )
+  </insert>
+
+</mapper>

@@ -108,6 +108,9 @@ CREATE TABLE COMMENT_T (
     USER_NO         NUMBER              NULL            ,
     BLOG_NO         NUMBER              NOT NULL        ,
     CREATED_AT      VARCHAR2(30 BYTE)   NULL            ,
+    STATUS          NUMBER              NOT NULL        ,       -- 1:정상, 0:삭제 (실제로 삭제되지 않는 게시판)
+    DEPTH           NUMBER              NOT NULL        ,       -- 0:원글, 1:댓글, 2:대댓글, ...
+    GROUP_NO        NUMBER              NOT NULL        ,       -- 원글과 모든 댓글(댓글, 대댓글)은 동일한 GROUP_NO를 가져야 함
     CONSTRAINT PK_COMMENT PRIMARY KEY(COMMENT_NO),
     CONSTRAINT FK_USER_COMMENT FOREIGN KEY(USER_NO) REFERENCES USER_T(USER_NO) ON DELETE SET NULL,
     CONSTRAINT FK_BLOG_COMMENT FOREIGN KEY(BLOG_NO) REFERENCES BLOG_T(BLOG_NO) ON DELETE CASCADE

@@ -23,6 +23,7 @@ public class UserDto {
   private String jibunAddress;
   private String detailAddress;
   private int agree;
+  private int status;
   private Date pwModifiedAt;
   private Date joinedAt;
 }
