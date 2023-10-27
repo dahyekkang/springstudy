@@ -5,8 +5,24 @@
 
 <mapper namespace="com.gdu.myhome.dao.BlogMapper">
 
+  <!-- 
+    처리 순서
+    1. BLOG_SEQ.NEXTVAL 값을 먼저(order="BEFORE") 파라미터로 전달된 BlogDto의 blogNo에 저장한다.
+    2. 저장된 blogNo를 INSERT문에서 사용한다.
+
+
+    서비스에서 보내준 BlogDto에는 title, contents, userNo, ip 이렇게 4개가 들어있다.
+    db에서 여기에다가 blogNo를 넣어준다. 서비스에서 못하므로 db(mapper)에서 해야 한다!!!!
+    
+    결과적으로 BlogDto에는 5개의 값이 들어가야 한다.
+      
+  -->
   <insert id="insertBlog" parameterType="BlogDto">
-    INSERT INTO BlOG_T (
+    <selectKey order="BEFORE" keyProperty="blogNo" resultType="int">
+      SELECT BLOG_SEQ.NEXTVAL
+        FROM DUAL
+    </selectKey>
+    INSERT INTO BLOG_T (
         BLOG_NO
       , TITLE
       , CONTENTS
@@ -15,7 +31,7 @@
       , CREATED_AT
       , MODIFIED_AT
     ) VALUES( 
-        BLOG_SEQ.NEXTVAL
+        #{blogNo}
       , #{title}
       , #{contents}
       , #{userNo}
@@ -24,5 +40,23 @@
       , TO_CHAR(SYSDATE, 'YYYY-MM-DD HH:MI:SS')
     )
   </insert>
+  
+  <insert id="insertBlogImage" parameterType="BlogImageDto">
+    INSERT INTO BLOG_IMAGE_T(
+        BLOG_NO
+      , IMAGE_PATH
+      , FILESYSTEM_NAME
+    ) VALUES(
+      #{blogNo}
+    , #{imagePath}
+    , #{filesystemName}
+    )
+  </insert>
+  
+  <select id="getBlogImageInYesterday" resultType="BlogImageDto">
+    SELECT BLOG_NO, IMAGE_PATH, FILESYSTEM_NAME
+      FROM BLOG_IMAGE_T
+     WHERE IMAGE_PATH = '/blog/' || TO_CHAR(SYSDATE - 1, 'YYYY/MM/DD')
+  </select>
 
 </mapper>
