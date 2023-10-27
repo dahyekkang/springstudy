@@ -19,5 +19,46 @@
       FROM BBS_T
   </select>
 
+  <!-- 상세 보기(전달 int bbsNo, BbsDto 반환) -->
+  <select id="getBbs" parameterType="int" resultType="BbsDto">
+    SELECT BBS_NO, EDITOR, TITLE, CONTENTS, CREATED_AT, MODIFIED_AT
+      FROM BBS_T
+     WHERE BBS_NO = #{bbsNo}
+  </select>
+
+  <!-- 삽입(전달 BbsDto bbs, int 반환(INSERT는 resultType 작성안함)) -->
+  <insert id="insertBbs" parameterType="BbsDto">
+    INSERT INTO BBS_T(
+        BBS_NO
+      , EDITOR
+      , TITLE
+      , CONTENTS
+      , CREATED_AT
+      , MODIFIED_AT
+    ) VALUES(
+        BBS_SEQ.NEXTVAL
+      , #{editor}
+      , #{title}
+      , #{contents}
+      , SYSDATE
+      , SYSDATE
+    )
+  </insert>
+  
+  <!-- 수정(전달 BbsDto bbs, int 반환(UPDATE는 resultType 작성안함)) -->
+  <update id="updateBbs" parameterType="BbsDto">
+    UPDATE BBS_T
+       SET TITLE = #{title}
+         , CONTENTS = #{contents}
+         , MODIFIED_AT = SYSDATE
+     WHERE BBS_NO = #{bbsNo}
+  </update>
+
+  <!-- 삭제(전달 int bbsNo, int 반환(DELETE는 resultType 작성안함)) -->
+  <delete id="deleteBbs" parameterType="int">
+    DELETE
+      FROM BBS_T
+     WHERE BBS_NO = #{bbsNo}
+  </delete>
 
 </mapper>

@@ -13,7 +13,7 @@
 <body>
 
   <h1>Hello World</h1>
-  <a href="${contextPath}/bbs/list.do">게시판</a>
+  <a href="${contextPath}/list.do">게시판</a>
   
 </body>
 </html>

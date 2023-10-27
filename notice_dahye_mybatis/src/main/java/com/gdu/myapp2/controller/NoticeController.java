@@ -8,4 +8,6 @@ import lombok.RequiredArgsConstructor;
 @Controller
 public class NoticeController {
 
+  
+  
 }

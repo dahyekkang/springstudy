@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.ui.Model;
 
+import com.gdu.bbs.dto.BbsDto;
+
 public interface BbsService {
 
   public void loadBbsList(HttpServletRequest request, Model model);    // 요청에서 파라미터를 뺀다.
@@ -20,5 +22,9 @@ public interface BbsService {
    * 만약 저장하는 게 목록밖에 없으면 그냥 목록을 반환해도 된다. 그러면 그걸 controller가 받아서 저장한다.
    */
   
+  public BbsDto getBbs(int bbsNo);
+  public int addBbs(BbsDto bbs);
+  public int modifyBbs(BbsDto bbs);
+  public int removeBbs(int BbsNo);
   
 }
