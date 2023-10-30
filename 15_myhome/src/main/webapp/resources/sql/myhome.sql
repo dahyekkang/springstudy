@@ -160,9 +160,50 @@ INSERT INTO FREE_T VALUES (FREE_SEQ.NEXTVAL, 'user1@naver.com', '내용19', SYST
 INSERT INTO FREE_T VALUES (FREE_SEQ.NEXTVAL, 'user1@naver.com', '내용20', SYSTIMESTAMP, 1, 0, FREE_SEQ.CURRVAL, 0);
 COMMIT;
 
--- 쿼리 테스트
+-- 블로그 쿼리 테스트
 
--- 1. 목록 (??? 순으로 5 ~ 10)
+-- 1. 블로그 목록 (사용자 - 블로그 조인)
+-- 부모 : 일대다 관계에서 일(PK OR UNIQUE)    - 사용자
+-- 자식 : 일대다 관계에서 다(FK)              - 블로그
+
+-- 내부 : 사용자와 블로그에 모두 존재하는 데이터를 조인하는 방식
+-- 외부 : 사용자가 없는 블로그도 모두 조인하는 방식 (불가능 - BLOG_T의 USER_NO가 NOT NULL)
+--        블로그가 없는 사용자도 모두 조인하는 방식 (필요 없는 방식)
+SELECT A.BLOG_NO, A.TITLE, A.CONTENTS, A.USER_NO, A.HIT, A.IP, A.CREATED_AT, A.MODIFIED_AT, A.EMAIL
+  FROM (SELECT ROW_NUMBER() OVER(ORDER BY B.BLOG_NO DESC) AS RN, B.BLOG_NO, B.TITLE, B.CONTENTS, B.USER_NO, B.HIT, B.IP, B.CREATED_AT, B.MODIFIED_AT, U.EMAIL   -- USER_NO 는 누구의 USER_NO여도 상관없음
+          FROM USER_T U INNER JOIN BLOG_T B             -- 부모 테이블 먼저 적는 게 성능에 좋음
+            ON B.USER_NO = U.USER_NO) A
+ WHERE A.RN BETWEEN 1 AND 10;
+
+
+-- 2. 상세
+
+-- 1) 조회수 증가
+UPDATE BLOG_T
+   SET HIT = HIT + 1
+ WHERE BLOG_NO = 1;
+
+-- 2) 블로그 상세 정보 조회      사용자 정보를 가져오기 위해 JOIN 사용
+SELECT B.BLOG_NO, B.TITLE, B.CONTENTS, B.HIT, B.IP, B.CREATED_AT, B.MODIFIED_AT, U.USER_NO, U.EMAIL, U.NAME
+  FROM USER_T U, BLOG_T B
+ WHERE U.USER_NO = B.USER_NO
+   AND B.BLOG_NO = 1;
+
+-- 3) 댓글 목록(수정 불가)
+-- 블로그 - 댓글 : 일대다관계 (댓글이 달린 블로그 정보는 이미 상세보기에 모두 표시되어 있으므로 여기에선 조인할 필요가 없음)
+-- 사용자 - 댓글 : 일대다관계 (댓글에 사용자 이름을 표시)
+SELECT A.COMMENT_NO, A.CONTENTS, A.BLOG_NO, A.CREATED_AT, A.STATUS, A.DEPTH, A.GROUP_NO, A.USER_NO, A.NAME
+  FROM (SELECT ROW_NUMBER() OVER(ORDER BY GROUP_NO DESC, DEPTH ASC, COMMENT_NO DESC) AS RN, C.COMMENT_NO, C.CONTENTS, C.BLOG_NO, C.CREATED_AT, C.STATUS, C.DEPTH, C.GROUP_NO, U.USER_NO, U.NAME
+          FROM USER_T U INNER JOIN COMMENT_T C
+            ON U.USER_NO = C.USER_NO
+         WHERE C.BLOG_NO = 1) A
+ WHERE A.RN BETWEEN 1 AND 10;
+
+
+
+-- 계층 쿼리 테스트
+
+-- 1. 목록 (??? 순으로 1 ~ 10)
 
 -- 1) ROWNUM 가상 칼럼
 SELECT FREE_NO, EMAIL, CONTENTS, CREATED_AT, STATUS, DEPTH, GROUP_NO, GROUP_ORDER
@@ -170,13 +211,13 @@ SELECT FREE_NO, EMAIL, CONTENTS, CREATED_AT, STATUS, DEPTH, GROUP_NO, GROUP_ORDE
           FROM (SELECT FREE_NO, EMAIL, CONTENTS, CREATED_AT, STATUS, DEPTH, GROUP_NO, GROUP_ORDER
                   FROM FREE_T
                  ORDER BY FREE_NO DESC))
- WHERE RN BETWEEN 5 AND 10;
+ WHERE RN BETWEEN 1 AND 10;
  
 -- 2) ROW_NUMBER() 함수
 SELECT FREE_NO, EMAIL, CONTENTS, CREATED_AT, STATUS, DEPTH, GROUP_NO, GROUP_ORDER
   FROM (SELECT ROW_NUMBER() OVER(ORDER BY FREE_NO DESC) AS RN, FREE_NO, EMAIL, CONTENTS, CREATED_AT, STATUS, DEPTH, GROUP_NO, GROUP_ORDER -- 3단 서브쿼리문이 2단 서브쿼리문으로 바뀔 수 있다. ROW_NUMBER() 함수 사용
           FROM FREE_T)
- WHERE RN BETWEEN 5 AND 10;
+ WHERE RN BETWEEN 1 AND 10;
 
 SELECT * FROM FREE_T;
 

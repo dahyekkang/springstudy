@@ -13,9 +13,9 @@ public class BlogDto {
   private int blogNo;
   private String title;
   private String contents;
-  private int userNo;       // 외래키
   private int hit;
   private String ip;
   private String createdAt;
   private String modifiedAt;
+  private UserDto userDto;     // private int userNo; // 외래키
 }
