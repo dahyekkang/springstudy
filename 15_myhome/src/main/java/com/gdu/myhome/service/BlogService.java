@@ -18,6 +18,12 @@ public interface BlogService {
   // 상세보기(조회수 증가(redirect) + 상세조회(forward) 분리해서 하기!)
   public int increaseHit(int blogNo);
   public BlogDto getBlog(int blogNo);
+  public int modifyBlog(HttpServletRequest request);
+  public int removeBlog(int blogNo);
+  
   public Map<String, Object> addComment(HttpServletRequest request);
   public Map<String, Object> loadCommentList(HttpServletRequest request);    // ajax은 페이지 이동없이 데이터만 주고 받으므로 model이 필요없다!
+  public Map<String, Object> addCommentReply(HttpServletRequest request);
+  
+  public Map<String, Object> removeComment(int commentNo);
 }

@@ -7,7 +7,7 @@
 <c:set var="dt" value="<%=System.currentTimeMillis()%>" />
 
 <jsp:include page="../layout/header.jsp">
-  <jsp:param value="블로그작성" name="title" />
+  <jsp:param value="블로그편집" name="title" />
 </jsp:include>
 
 <style>
@@ -20,30 +20,27 @@
   .ck-content {
     color: gray;
   }
-  .btn {
-    margin: 40px 0 100px;
-  }
 </style>
 
 <div>
   
-  <form id="frm_blog_add" method="post" action="${contextPath}/blog/addBlog.do">
+  <form id="frm_blog_modify" method="post" action="${contextPath}/blog/modifyBlog.do">
   
-    <h1 style="text-align: center">블로그를 작성하세요</h1>
+    <h1 style="text-align: center">${blog.blogNo}번 블로그 편집</h1>
     
     <div>
       <label for="title">제목</label>
-      <input type="text" name="title" id="title" class="form-control" >     
+      <input type="text" name="title" id="title" class="form-control" value="${blog.title}">     
     </div>
     
     <div>
       <label for="contents">내용</label>
-      <textarea name="contents" id="contents"></textarea>
+      <textarea name="contents" id="contents">${blog.contents}</textarea>
     </div>
     
     <div>
-      <input type="hidden" name="userNo" value="${sessionScope.user.userNo}">
-      <button class="btn btn-primary col-12" type="submit">작성완료</button>
+      <input type="hidden" name="blogNo" value="${blog.blogNo}">
+      <button class="btn btn-primary col-12" type="submit">수정완료</button>
     </div>
     
   </form>
@@ -84,7 +81,6 @@
 	       console.log(err)
 	     });
 	  }
-
   
   fnCkeditor();
   
