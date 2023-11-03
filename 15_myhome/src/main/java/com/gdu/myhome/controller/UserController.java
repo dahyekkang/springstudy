@@ -56,7 +56,7 @@ public class UserController {
     // 네이버 로그인 후속 작업(처음 시도 : 간편가입, 이미 가입 : 로그인)(email을 가진 유저가 DB에 있는지 확인해야한다.)
     UserDto user = userService.getUser(naverProfile.getEmail());
     if(user == null) {
-      // 네이버간편가입 (정보가 입력된 화면으로 이동)
+      // 네이버 간편가입 페이지로 이동 (정보가 입력된 화면으로 이동)
       model.addAttribute("naverProfile", naverProfile);     // 네이버 프로필을 저장시켜놓고 가입 화면으로 forward 할 것이다.
       return "user/naver_join";   // jsp에서 el로 naverProfile을 받을 수 있다.
     } else {

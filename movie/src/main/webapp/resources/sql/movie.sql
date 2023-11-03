@@ -22,3 +22,4 @@ INSERT INTO MOVIE VALUES(MOVIE_SEQ.NEXTVAL, '월-E', '애니메이션', '월-E�
 INSERT INTO MOVIE VALUES(MOVIE_SEQ.NEXTVAL, '센과 치히로의 행방불명', '애니메이션', '금지된 신들의 세계로 온 치히로', 2);
 INSERT INTO MOVIE VALUES(MOVIE_SEQ.NEXTVAL, '과속스캔들', '코미디', '스물두살 딸 여섯살 손자', 3);
 INSERT INTO MOVIE VALUES(MOVIE_SEQ.NEXTVAL, '엽기적인 그녀', '코미디', '견우야 미안해', 4);
+COMMIT;

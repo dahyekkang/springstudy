@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,8 +20,8 @@ import com.gdu.myhome.service.BlogService;
 
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @RequestMapping("/blog")
+@RequiredArgsConstructor
 @Controller
 public class BlogController {
 
@@ -69,11 +70,11 @@ public class BlogController {
     return "blog/detail";
   }
   
+  // DB에 안 가서 성능이 좋아진다!
+  // model에 저장할 필요가 없다. 이미 저장돼있다. (커맨드 객체를 자동으로 뷰까지 전달한다. 별도로 model.addAttribute를 할 필요가 없다.
+  // 모델에 실어줄 때, blog라는 이름으로 실어줘라!
   @PostMapping("/edit.form")
-  public String edit(@RequestParam(value="blogNo", required=false, defaultValue="0") int blogNo
-                   , Model model) {
-    BlogDto blog = blogService.getBlog(blogNo);
-    model.addAttribute("blog", blog);
+  public String edit(@ModelAttribute("blog") BlogDto blog) {   // BlogDto나 request로 받을 수 있다.
     return "blog/edit";
   }
   

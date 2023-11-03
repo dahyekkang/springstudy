@@ -1,15 +1,28 @@
 package com.gdu.myhome.service;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -83,7 +96,7 @@ public class UploadServiceImpl implements UploadService {
           File thumbnail = new File(dir, "s_" + filesystemName);  // small 이미지를 의미하는 s_을 덧붙임
           Thumbnails.of(file)           // 원본을
                     .size(100, 100)     // 가로 100px, 세로 100px
-                    .toFile(thumbnail); // thumbnail로  제작
+                    .toFile(thumbnail); // thumbnail로 제작
         }
         
         AttachDto attach = AttachDto.builder()
@@ -105,6 +118,7 @@ public class UploadServiceImpl implements UploadService {
   
   }
   
+  @Transactional(readOnly=true)
   @Override
   public Map<String, Object> getUploadList(HttpServletRequest request) {
     
@@ -123,6 +137,155 @@ public class UploadServiceImpl implements UploadService {
    
     return Map.of("uploadList", uploadList
                 , "totalPage", myPageUtils.getTotalPage());   // 전체 페이지 이후에도 가져오려고 할 수도 있어서 전체 페이지 수도 같이 보낸다.
+  }
+  
+  @Transactional(readOnly=true)
+  @Override
+  public void loadUpload(HttpServletRequest request, Model model) {
+    
+    Optional<String> opt = Optional.ofNullable(request.getParameter("uploadNo"));
+    int uploadNo = Integer.parseInt(opt.orElse("0"));
+    
+    model.addAttribute("upload", uploadMapper.getUpload(uploadNo));
+    model.addAttribute("attachList", uploadMapper.getAttachList(uploadNo));
+    
+    
+  }
+  
+  @Override
+  public ResponseEntity<Resource> download(HttpServletRequest request) {
+    
+    // 첨부 파일의 정보 가져오기
+    int attachNo = Integer.parseInt(request.getParameter("attachNo"));
+    AttachDto attach = uploadMapper.getAttach(attachNo);
+    
+    // 첨부 파일 File 객체 -> Resource 객체
+    File file = new File(attach.getPath(), attach.getFilesystemName());
+    Resource resource = new FileSystemResource(file);   // Resource화
+    
+    // 첨부 파일이 없으면 다운로드 취소
+    if(!resource.exists()) {
+      return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);  // 404
+    }
+    
+    // 다운로드 횟수 증가하기
+    uploadMapper.updateDownloadCount(attachNo);
+    
+    // 사용자가 다운로드 받을 파일의 이름 결정 (User-Agent값에 따른 인코딩 처리)
+    String originalFilename = attach.getOriginalFilename();   // 그대로 내보내면 인코딩 깨질 수 있음
+    String userAgent = request.getHeader("User-Agent");       // 요청헤더.
+    
+    // 인코딩 시 try-catch문 필요
+    try {
+      // IE (InternetExplorer)
+      if(userAgent.contains("Trident")) {
+        originalFilename = URLEncoder.encode(originalFilename, "UTF-8").replace("+", " ");    // 공백이 "+"로 바뀌므로 다시 변경해준다.
+      }
+      // Edge
+      else if(userAgent.contains("Edg")) {
+        originalFilename = URLEncoder.encode(originalFilename, "UTF-8");
+      }
+      // Other
+      else {
+        originalFilename = new String(originalFilename.getBytes("UTF-8"), "ISO-8859-1");
+      }
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
+    
+    // 다운로드 응답 헤더 만들기
+    HttpHeaders header = new HttpHeaders();
+    header.add("Content-Type", "application/octet-stream");   // 이진 binary 데이터- 여기서 content-type을 명시했기 때문에 produces 작업하지 않아도 된다.
+    header.add("Content-Disposition", "attachment; filename=" + originalFilename);   // attachment;는 고정
+    header.add("Content-Length", file.length() + "");    //파일의 크기를 문자열로 변경
+    
+    // 응답
+    return new ResponseEntity<Resource>(resource, header, HttpStatus.OK);
+    
+  }
+  
+  @Override
+  public ResponseEntity<Resource> downloadAll(HttpServletRequest request) {
+    
+    // 다운로드할 모든 첨부파일 정보 가져오기
+    int uploadNo = Integer.parseInt(request.getParameter("uploadNo"));
+    List<AttachDto> attachList = uploadMapper.getAttachList(uploadNo);
+    
+    // 첨부파일이 없으면 종료
+    if(attachList.isEmpty()) {
+      return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
+    }
+    
+    // zip 파일을 생성할 경로
+    File tempDir = new File(myFileUtils.getTempPath());
+    if(!tempDir.exists()) {
+      tempDir.mkdirs();
+    }
+    
+    // zip 파일의 이름
+    String zipName = myFileUtils.getTempFilename() + ".zip";
+    
+    // zip 파일의 File 객체
+    File zipFile = new File(tempDir, zipName);
+    // temp와 관련된 준비 끝
+
+    // zip 파일을 생성하는 출력 스트림
+    ZipOutputStream zout = null;
+    
+    // 첨부 파일들을 순회하면서 zip 파일에 등록하기
+    try {
+      
+      zout = new ZipOutputStream(new FileOutputStream(zipFile));
+      
+      for(AttachDto attach : attachList) {
+        
+        // 각 첨부파일들의 원래 이름으로 zip 파일에 등록하기 (이름만 등록)
+        ZipEntry zipEntry = new ZipEntry(attach.getOriginalFilename());   // java.util 패키지에 있음
+        zout.putNextEntry(zipEntry);
+        
+        // 각 첨부파일들의 내용을 zip 파일에 등록하기 (실제 파일 등록)
+        BufferedInputStream bin = new BufferedInputStream(new FileInputStream(new File(attach.getPath(), attach.getFilesystemName())));
+        zout.write(bin.readAllBytes());
+        
+        // 자원 반납
+        bin.close();
+        zout.closeEntry();
+        
+        // 다운로드 횟수 증가
+        uploadMapper.updateDownloadCount(attach.getAttachNo());
+      }
+      
+      // zout 자원 반납
+      zout.close();
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    // 다운로드할 zip 파일의 File 객체 -> Resource 객체
+    Resource resource = new FileSystemResource(zipFile);
+    
+    
+    // 다운로드 응답 헤더 만들기
+    HttpHeaders header = new HttpHeaders();
+    header.add("Content-Type", "application/octet-stream");   // 이진 binary 데이터- 여기서 content-type을 명시했기 때문에 produces 작업하지 않아도 된다.
+    header.add("Content-Disposition", "attachment; filename=" + zipName);   // attachment;는 고정
+    header.add("Content-Length", zipFile.length() + "");    //파일의 크기를 문자열로 변경
+    
+    // 응답
+    return new ResponseEntity<Resource>(resource, header, HttpStatus.OK);
+
+  }
+  
+  @Override
+  public void removeTempFiles() {
+    File tempDir = new File(myFileUtils.getTempPath());
+    File[] targetList = tempDir.listFiles();
+    if(targetList != null) {
+      for(File target : targetList) {
+        target.delete();
+      }
+    }
   }
   
 }

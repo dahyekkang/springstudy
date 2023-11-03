@@ -64,11 +64,15 @@
 		  success: (resData) => {   // resData = {"uploadList": [], "totalPage" : 10}
 			  totalPage = resData.totalPage;
 			  $.each(resData.uploadList, (i, upload) => {
-				  let str = '<div class="upload">';
-				  str += '<div>제목:   ' + upload.title + '</div>';
-				  str += '<div>작성자: ' + upload.userDto.name + '</div>';
-				  str += '<div>생성:   ' + upload.createdAt + '</div>';
-				  str += '<div>첨부:   ' + upload.attachCount + '</div>';
+				  let str = '<div class="upload" data-upload_no="' + upload.uploadNo + '">';
+				  str += '<div>제목: ' + upload.title + '</div>';
+				  if(upload.userDto === null) {
+					  str += '<div>작성: 정보없음</div>';
+				  } else {
+				  str += '<div>작성: ' + upload.userDto.name + '</div>';
+				  }
+				  str += '<div>생성: ' + upload.createdAt + '</div>';
+				  str += '<div>첨부: ' + upload.attachCount + '개</div>';
 				  str += '</div>';
 				  $('#upload_list').append(str);
 			  })
@@ -76,9 +80,15 @@
 	  })
   }
   
+  const fnUploadDetail = () => {
+	  $(document).on('click', '.upload', function() {
+		  location.href = '${contextPath}/upload/detail.do?uploadNo=' + $(this).data('upload_no');
+	  })
+  }
+  
   const fnScroll = () => {
 	  
-	  var timerId;   // 처음엔 undefined로 인식
+	  var timerId;   // 최초 undefined 상태
 	  
 	  $(window).on('scroll', () => {
 		  
@@ -101,8 +111,7 @@
   			  fnGetUploadList();
 			  }
 			  
-			  
-		  }, 500);   // 500밀리초(0.5초) 후 동작(시간은 임의로 조정 가능함)
+		  }, 200);   // 200밀리초(0.2초) 후 동작(시간은 임의로 조정 가능함)
 	  })
   }
 
@@ -113,8 +122,6 @@
 		  if(addResult === 'true') {
 			  alert('성공적으로 업로드 되었습니다.');
 			  $('#upload_list').empty();
-			  // 목록 갱신
-			  fnGetUploadList();
 		  } else {
 			  alert('업로드가 실패하였습니다.');
 		  }
@@ -122,9 +129,12 @@
   }
   
   
+  
   fnGetUploadList();
+  fnUploadDetail();
   fnScroll();
   fnAddResult();
+  
 </script>
 
 
