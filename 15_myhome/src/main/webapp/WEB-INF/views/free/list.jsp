@@ -52,12 +52,12 @@
                 </c:if>
                 ${free.contents}
                 <!-- 댓글작성버튼 -->
-                <button type="button" class="btn_reply">댓글</button>
+                <button type="button" class="btn_reply btn btn-outline-secondary btn-sm">댓글</button>
                 <!-- 게시글삭제버튼 -->
                 <form class="frm_remove" method="post" action="${contextPath}/free/remove.do" style="display: inline;">
                   <c:if test="${free.email == sessionScope.user.email}">
                     <input type="hidden" name="freeNo" value="${free.freeNo}">
-                    <button type="submit">삭제</button>                  
+                    <button type="submit" class="btn_reply btn btn-outline-secondary btn-sm">삭제</button>                  
                   </c:if>
                 </form>
               </td>

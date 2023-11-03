@@ -121,7 +121,7 @@ public class BlogServiceImpl implements BlogService {
   
   public void blogImageBatch() {
     
-    // 1. 어제 작성된 블로그의 이미지 목록(DB)
+    // 1. 어제 작성된 블로그의 이미지 목록 (DB)
     List<BlogImageDto> blogImageList = blogMapper.getBlogImageInYesterday();
     
     // 2. List<BlogImageDto> -> List<Path> (Path는 경로+파일명으로 구성)

@@ -28,7 +28,7 @@ public class ShouldNotLoginInterceptor implements HandlerInterceptor {    // int
       PrintWriter out = response.getWriter();
       out.println("<script>");
       out.println("alert('해당 기능은 사용할 수 없습니다.')");
-      out.println("history.back()");
+      out.println("location.href='" + request.getContextPath() + "/main.do'");
       out.println("</script>");
       out.flush();
       out.close();
