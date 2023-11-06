@@ -23,4 +23,9 @@ public interface UploadMapper {
   public AttachDto getAttach(int attachNo);
   public int updateDownloadCount(int attachNo);
   
+  public int updateUpload(UploadDto upload);
+  
+  public int deleteAttach(int attachNo);
+  
+  public int deleteUpload(int uploadNo);
 }
